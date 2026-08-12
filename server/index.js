@@ -1,48 +1,56 @@
-const express = require("express")
-const cors = require("cors")
-const path = require('path')
-require("dotenv").config()
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
 
-require("./db_connect")
+require("dotenv").config();
+require("./db_connect");
 
-const Router = require("./routes/index")
-const app = express()
+const Router = require("./routes/index");
 
-var whitelist = [
-    'http://localhost:3000',
-    'http://localhost:8000',
-    'http://localhost:4000',
-    'http://localhost:5000',
-    'https://my-portfolio-x6zy.onrender.com',
-    'https://my-portfolioadmin.vercel.app'
-]
+const app = express();
 
-var corsOptions = {
+const whitelist = [
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://localhost:4000",
+    "http://localhost:5000",
+    "https://my-portfolio-x6zy.onrender.com",
+    "https://my-portfolioadmin.vercel.app",
+    "https://ctech-ethics.onrender.com"
+];
+
+const corsOptions = {
     origin: function (origin, callback) {
         if (!origin || whitelist.includes(origin)) {
-            callback(null, true)
+            callback(null, true);
         } else {
-            callback(new Error('CORS Error: You are not authorized to access this API'))
+            callback(
+                new Error("CORS Error: You are not authorized to access this API")
+            );
         }
     }
-}
+};
 
-app.use(cors(corsOptions))
-app.use(express.json())
-app.use("/public", express.static("public"))
+app.use(cors(corsOptions));
+app.use(express.json());
 
-// Define API routes first
-app.use("/api", Router)
+app.use("/public", express.static(path.join(__dirname, "public")));
 
-// Serve React frontend static files
-app.use(express.static(path.join(__dirname, "admin/build")))
+// API routes
+app.use("/api", Router);
 
-// ✅ FIXED: The catch-all route must be "*" so React Router can handle the client-side routing
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "admin/build", "index.html"))
-})
+// Admin React build
+const adminBuildPath = path.join(__dirname, "../admin/build");
 
-let port = process.env.PORT || 8000
+app.use(express.static(adminBuildPath));
+
+// React Router fallback - Express 5
+app.get("/{*splat}", (req, res) => {
+    res.sendFile(path.join(adminBuildPath, "index.html"));
+});
+
+const port = process.env.PORT || 8000;
+
 app.listen(port, () => {
-    console.log(`🚀 Server is running at http://localhost:${port}`)
-})
+    console.log(`🚀 Server is running on port ${port}`);
+});
