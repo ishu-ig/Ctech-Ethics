@@ -1,0 +1,188 @@
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getBlog,
+  deleteBlog,
+  updateBlog,
+} from "../../Redux/ActionCreators/BlogActionCreators";
+
+export default function AdminBlog() {
+  let rawData = useSelector((state) => state.BlogStateData);
+  let dispatch = useDispatch();
+  let [flag, setFlag] = useState(false);
+  let [search, setSearch] = useState("");
+
+  // Defensive: filter(Boolean) guards against any stray undefined/null
+  // entries that could otherwise crash the .active lookups below
+  let BlogStateData = (Array.isArray(rawData) ? rawData : (rawData?.data || [])).filter(Boolean);
+
+  function deleteRecord(_id) {
+    if (window.confirm("Are you sure you want to delete this blog?")) {
+      dispatch(deleteBlog({ _id }));
+      setFlag(!flag);
+    }
+  }
+
+  function updateRecord(_id) {
+    const item = BlogStateData.find((b) => b._id === _id);
+    if (!item) return;
+
+    // Toggle published/draft status
+    const formData = new FormData();
+    formData.append("_id", _id);
+    formData.append("active", !item.active);
+    dispatch(updateBlog(formData));
+    setFlag(!flag);
+  }
+
+  function getAPIData() {
+    dispatch(getBlog());
+  }
+
+  useEffect(() => {
+    getAPIData();
+  }, [flag, dispatch]);
+
+  const totalCount = BlogStateData.length;
+  const activeCount = BlogStateData.filter((i) => i.active).length;
+  const inactiveCount = BlogStateData.filter((i) => !i.active).length;
+
+  const filteredData = BlogStateData.filter(
+    (item) =>
+      item.title?.toLowerCase().includes(search.toLowerCase()) ||
+      item.category?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <>
+      <style>{`
+        .act-strip { display: inline-flex; align-items: center; gap: 2px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 3px; }
+        .act-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 6px; border: none; background: transparent; cursor: pointer; font-size: 0.88rem; color: #6c757d; transition: background .13s, color .13s, transform .1s; text-decoration: none; position: relative; }
+        .act-btn:hover { transform: scale(1.1); }
+        .act-btn-edit:hover   { background: #cfe2ff; color: #0d6efd; }
+        .act-btn-on:hover     { background: #d1e7dd; color: #198754; }
+        .act-btn-off:hover    { background: #fff3cd; color: #856404; }
+        .act-btn-del:hover    { background: #f8d7da; color: #dc3545; }
+        .act-sep { width: 1px; height: 16px; background: #dee2e6; flex-shrink: 0; }
+      `}</style>
+
+      <main className="dashboard-content">
+        <div className="container-fluid px-3 px-lg-4 py-4">
+          <div className="page-heading">
+            <div className="page-heading-copy">
+              <span className="page-icon"><i className="bi bi-journal-text"></i></span>
+              <div>
+                <p className="eyebrow mb-1">Management</p>
+                <h1 className="h3 mb-1">Blog</h1>
+                <p className="text-muted mb-0">Review and manage blog posts.</p>
+              </div>
+            </div>
+            <div className="heading-actions">
+              <Link className="btn btn-primary btn-sm" to="/blog/create">
+                <i className="bi bi-plus-circle"></i> Add Blog
+              </Link>
+            </div>
+          </div>
+
+          <section className="row g-3 mt-2 mb-1">
+            <div className="col-12 col-sm-6 col-xl-4">
+              <article className="metric-card text-white">
+                <div className="metric-top"><span className="metric-label">Total</span><span className="metric-icon"><i className="bi bi-journal-text"></i></span></div>
+                <div className="metric-value">{totalCount}</div>
+                <div className="metric-meta"><span>all</span><span>blog posts</span></div>
+              </article>
+            </div>
+            <div className="col-12 col-sm-6 col-xl-4">
+              <article className="metric-card text-white">
+                <div className="metric-top"><span className="metric-label">Active</span><span className="metric-icon"><i className="bi bi-check-circle-fill"></i></span></div>
+                <div className="metric-value">{activeCount}</div>
+                <div className="metric-meta"><span>published</span><span>on site</span></div>
+              </article>
+            </div>
+            <div className="col-12 col-sm-6 col-xl-4">
+              <article className="metric-card">
+                <div className="metric-top"><span className="metric-label">Inactive</span><span className="metric-icon"><i className="bi bi-eye-slash-fill"></i></span></div>
+                <div className="metric-value">{inactiveCount}</div>
+                <div className="metric-meta"><span>hidden</span><span>from site</span></div>
+              </article>
+            </div>
+          </section>
+
+          <section className="panel mt-3">
+            <div className="panel-header">
+              <div>
+                <h2 className="h5 mb-1 section-title"><i className="bi bi-table"></i><span>Blog List</span></h2>
+              </div>
+              <div className="ms-auto" style={{ minWidth: 220 }}>
+                <div className="input-group input-group-sm">
+                  <span className="input-group-text bg-white"><i className="bi bi-search text-muted"></i></span>
+                  <input type="text" className="form-control border-start-0" placeholder="Search title or category..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                </div>
+              </div>
+            </div>
+
+            <div className="table-responsive">
+              <table className="table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Thumbnail</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Featured</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" className="text-end">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredData.length > 0 ? (
+                    filteredData.map((item, index) => (
+                      <tr key={item._id}>
+                        <td>{index + 1}</td>
+                        <td>
+                          {item.image ? (
+                            <img src={item.image} height={44} width={70} className="rounded shadow-sm" style={{ objectFit: "cover" }} alt="" />
+                          ) : (
+                            <span className="d-inline-flex align-items-center justify-content-center bg-light rounded shadow-sm" style={{ width: 70, height: 44 }}><i className="bi bi-image text-muted"></i></span>
+                          )}
+                        </td>
+                        <td className="fw-semibold text-truncate" style={{ maxWidth: 200 }} title={item.title}>{item.title}</td>
+                        <td>
+                          <span className="badge" style={{ backgroundColor: item.categoryColor || '#47b2e4' }}>{item.category}</span>
+                        </td>
+                        <td>{item.author?.name}</td>
+                        <td>{item.featured ? <i className="bi bi-star-fill text-warning"></i> : "-"}</td>
+                        <td>
+                          <span className={`badge ${item.active ? "text-bg-success" : "text-bg-secondary"}`}>
+                            {item.active ? "Published" : "Draft"}
+                          </span>
+                        </td>
+                        <td className="text-end">
+                          <div className="act-strip">
+                            <Link className="act-btn act-btn-edit" to={`/blog/update/${item._id}`}><i className="bi bi-pencil-square"></i></Link>
+                            <span className="act-sep"></span>
+                            <button className={`act-btn ${item.active ? "act-btn-off" : "act-btn-on"}`} onClick={() => updateRecord(item._id)}>
+                              <i className={`bi ${item.active ? "bi-pause-fill" : "bi-play-fill"}`}></i>
+                            </button>
+                            <span className="act-sep"></span>
+                            {localStorage.getItem("role") === "Super Admin" && (
+                              <button className="act-btn act-btn-del" onClick={() => deleteRecord(item._id)}><i className="bi bi-trash3-fill"></i></button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr><td colSpan="8" className="text-center text-muted py-4">No blog posts found.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </>
+  );
+}
