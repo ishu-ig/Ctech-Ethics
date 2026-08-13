@@ -154,17 +154,17 @@ export default function HomePage() {
                       animate="visible"
                       exit="exit"
                       className="hero-headline-word"
-                      style={{
+                      style={{ marginBottom: 6, lineHeight: 1.15, display: 'block' }}
+                    >
+                      <span style={{
                         background: `linear-gradient(135deg, ${slide?.accent || '#47b2e4'} 0%, #a855f7 100%)`,
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text',
-                        marginBottom: 6,
-                        lineHeight: 1.15,
-                        display: 'inline-block',
-                      }}
-                    >
-                      {slide?.headline || 'Your Business'}
+                        display: 'inline',
+                      }}>
+                        {slide?.headline || 'Your Business'}
+                      </span>
                     </motion.h1>
                   </AnimatePresence>
 
