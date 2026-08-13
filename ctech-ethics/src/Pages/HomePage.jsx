@@ -145,28 +145,27 @@ export default function HomePage() {
                     Better Solutions For
                   </motion.h1>
 
-                  {/* Animated dynamic headline word */}
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.h1
-                      key={`word-${idx}`}
-                      variants={heroWordVariant}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="hero-headline-word"
-                      style={{ marginBottom: 6, lineHeight: 1.15, display: 'block' }}
-                    >
-                      <span style={{
-                        background: `linear-gradient(135deg, ${slide?.accent || '#47b2e4'} 0%, #a855f7 100%)`,
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                        display: 'inline',
-                      }}>
+                  {/* Dynamic headline word — gradient lives on a stable span, animation on wrapper */}
+                  <div className="hero-headline-word" style={{ marginBottom: 6, lineHeight: 1.15, display: 'block', overflow: 'hidden' }}>
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.span
+                        key={`word-${idx}`}
+                        initial={{ y: 32, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } }}
+                        exit={{ y: -24, opacity: 0, transition: { duration: 0.28 } }}
+                        style={{
+                          display: 'inline-block',
+                          background: `linear-gradient(135deg, ${slide?.accent || '#47b2e4'} 0%, #a855f7 100%)`,
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text',
+                        }}
+                      >
                         {slide?.headline || 'Your Business'}
-                      </span>
-                    </motion.h1>
-                  </AnimatePresence>
+                      </motion.span>
+                    </AnimatePresence>
+                  </div>
+
 
                   {/* Tagline */}
                   <motion.p variants={slideUp} className="hero-tagline-text" style={{
