@@ -39,12 +39,12 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 // API routes
 app.use("/api", Router);
 
-// Admin React build
-const adminBuildPath = path.join(__dirname, "../admin/build");
+// Admin build is INSIDE server/admin/build
+const adminBuildPath = path.join(__dirname, "admin", "build");
 
 app.use(express.static(adminBuildPath));
 
-// React Router fallback - Express 5
+// Express 5 React Router fallback
 app.get("/{*splat}", (req, res) => {
     res.sendFile(path.join(adminBuildPath, "index.html"));
 });
