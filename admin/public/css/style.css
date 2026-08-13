@@ -3242,8 +3242,10 @@ html[data-theme="dark"] .panel {
   /* Hide live badge */
   .admin-live-badge { display: none !important; }
 
-  /* Search hidden on small phones, shown only md+ */
-  .admin-search-wrapper { display: none !important; }
+  /* Search hidden on small phones in main bar, shown only md+ */
+  .admin-navbar > .container-fluid .admin-search-wrapper { display: none !important; }
+  .mobile-search-bar .admin-search-wrapper { display: flex !important; width: 100% !important; min-width: 0 !important; }
+
 
   /* Stat cards: 2-col on mobile */
   .row.g-3 > .col-xl-3,
