@@ -12,7 +12,6 @@ import { getService } from '../Redux/ActionCreators/ServiceActionCreators'
 import { getSubService } from '../Redux/ActionCreators/SubServiceActionCreators'
 
 /* ── Typography & Tokens ─────────────────────────────────────── */
-const FONT_MONO = "'JetBrains Mono', monospace"
 const FONT_HEAD = "'Space Grotesk', sans-serif"
 
 /* ── Animation Variants ─────────────────────────────────────── */
@@ -63,26 +62,6 @@ const PROCESS_STEPS = [
     { step: '07', title: 'Support', desc: 'Providing 24/7 technical monitoring, updates, and continuous growth.' },
 ]
 
-/* ── Tech Logos Dataset ─────────────────────────────────────── */
-const TECH_STACK = [
-    { name: 'React', icon: 'fa-react', color: '#61dafb' },
-    { name: 'Next.js', icon: 'fa-node-js', color: '#000000' },
-    { name: 'Node.js', icon: 'fa-node-js', color: '#68a063' },
-    { name: 'Express.js', icon: 'fa-server', color: '#828282' },
-    { name: 'MongoDB', icon: 'fa-database', color: '#47a248' },
-    { name: 'MySQL', icon: 'fa-database', color: '#00758f' },
-    { name: 'React Native', icon: 'fa-mobile', color: '#61dafb' },
-    { name: 'Flutter', icon: 'fa-mobile-screen', color: '#02569b' },
-    { name: 'Python', icon: 'fa-python', color: '#3776ab' },
-    { name: 'Firebase', icon: 'fa-fire', color: '#ffca28' },
-    { name: 'AWS', icon: 'fa-aws', color: '#ff9900' },
-    { name: 'Docker', icon: 'fa-docker', color: '#2496ed' },
-    { name: 'GitHub', icon: 'fa-github', color: '#ffffff' },
-    { name: 'OpenAI', icon: 'fa-brain', color: '#10a37f' },
-    { name: 'Figma', icon: 'fa-figma', color: '#f24e1e' },
-]
-
-/* ── Industries We Serve Dataset ────────────────────────────── */
 const INDUSTRIES = [
     { icon: 'fa-user-nurse', title: 'Healthcare', desc: 'Patient portals, telemedicine apps, & EHR integrations.' },
     { icon: 'fa-graduation-cap', title: 'Education', desc: 'LMS platforms, virtual classrooms, & student portals.' },

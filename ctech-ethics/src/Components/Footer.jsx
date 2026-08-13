@@ -11,21 +11,21 @@ export default function Footer() {
 
   const dispatch = useDispatch();
   const rawNewsletter = useSelector((state) => state.NewsletterStateData);
-  const NewsletterStateData = Array.isArray(rawNewsletter) ? rawNewsletter : (rawNewsletter?.data || []);
+  const newsletterLength = Array.isArray(rawNewsletter) ? rawNewsletter.length : (Array.isArray(rawNewsletter?.data) ? rawNewsletter.data.length : 0);
 
   // Detect when a new newsletter entry lands in the store (saga completed)
   useEffect(() => {
-    if (status === 'loading' && NewsletterStateData.length > prevCountRef.current) {
+    if (status === 'loading' && newsletterLength > prevCountRef.current) {
       setStatus('sent');
       setEmail('');
     }
-  }, [NewsletterStateData, status]);
+  }, [newsletterLength, status]);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!email) return;
 
-    prevCountRef.current = NewsletterStateData.length;
+    prevCountRef.current = newsletterLength;
     setStatus('loading');
     try {
       dispatch(createNewsletter({ email }));

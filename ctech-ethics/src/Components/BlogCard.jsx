@@ -41,7 +41,6 @@ export default function BlogCard({ post, index = 0, inView = true }) {
         categoryColor = '#47b2e4',
     } = post;
 
-    const postKey = _id || id || slug;
     const link = `/blog/${slug || id || _id}`;
 
     // Format author object vs string

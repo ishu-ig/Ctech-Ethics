@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import HeroSection from '../Components/HeroSection';
 import ConsultancyModal from '../Components/ConsultancyModal';
 import PortfolioCard from '../Components/PortfolioCard';
@@ -147,7 +147,6 @@ export default function PortfolioDetailPage() {
     const { id } = useParams();
     const dispatch = useDispatch();
     const rawData = useSelector((state) => state.PortfolioStateData);
-    const PortfolioStateData = Array.isArray(rawData) ? rawData : (rawData?.data || []);
 
     const [isConsultancyOpen, setIsConsultancyOpen] = useState(false);
     const [selectedImgIndex, setSelectedImgIndex] = useState(0);
@@ -156,13 +155,17 @@ export default function PortfolioDetailPage() {
         dispatch(getPortfolio());
     }, [dispatch]);
 
+    const allList = useMemo(() => {
+        const list = Array.isArray(rawData) ? rawData : (rawData?.data || []);
+        return list.length > 0 ? list : PORTFOLIO_FALLBACKS;
+    }, [rawData]);
+
     /* Find matching project */
     const project = useMemo(() => {
-        const allList = PortfolioStateData.length > 0 ? PortfolioStateData : PORTFOLIO_FALLBACKS;
         if (!id) return allList[0];
         const match = allList.find((p) => String(p._id) === String(id) || String(p.id) === String(id));
         return match || allList[0];
-    }, [id, PortfolioStateData]);
+    }, [id, allList]);
 
     // Format list of images
     const projectImages = useMemo(() => {
@@ -213,9 +216,8 @@ export default function PortfolioDetailPage() {
 
     // Related projects
     const relatedProjects = useMemo(() => {
-        const allList = PortfolioStateData.length > 0 ? PortfolioStateData : PORTFOLIO_FALLBACKS;
         return allList.filter((p) => String(p._id) !== String(project._id) && String(p.id) !== String(project.id)).slice(0, 3);
-    }, [project, PortfolioStateData]);
+    }, [project, allList]);
 
     return (
         <div className="portfolio-detail-wrapper">

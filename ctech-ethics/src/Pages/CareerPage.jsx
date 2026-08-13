@@ -440,7 +440,7 @@ function ProcessTimeline() {
                                 <motion.div
                                     className="process-card in-view"
                                     initial={{ opacity: 0, y: 25 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    animate={inView ? { opacity: 1, y: 0 } : {}}
                                     transition={{ duration: 0.45, delay: i * 0.1 }}
                                     whileHover={{ y: -6, scale: 1.02 }}
                                 >
@@ -473,7 +473,7 @@ function ProcessTimeline() {
                                 <motion.div
                                     className="process-card in-view"
                                     initial={{ opacity: 0, y: 25 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    animate={inView ? { opacity: 1, y: 0 } : {}}
                                     transition={{ duration: 0.45, delay: (i + 3) * 0.1 }}
                                     whileHover={{ y: -6, scale: 1.02 }}
                                 >
@@ -501,7 +501,7 @@ function ProcessTimeline() {
                                 <motion.div
                                     className="process-card process-mobile-card h-100 in-view"
                                     initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    animate={inView ? { opacity: 1, y: 0 } : {}}
                                     transition={{ duration: 0.4, delay: idx * 0.08 }}
                                     whileHover={{ y: -4 }}
                                 >

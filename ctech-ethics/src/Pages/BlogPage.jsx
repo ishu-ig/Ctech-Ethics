@@ -227,8 +227,7 @@ export default function BlogPage() {
     const [activeCategory, setActiveCategory] = useState('All');
     const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
     const [isCatModalOpen, setIsCatModalOpen] = useState(false);
-    const [newsletterEmail, setNewsletterEmail] = useState('');
-    const [newsletterStatus, setNewsletterStatus] = useState('idle'); // idle | loading | sent
+
 
     // Reset filter if it no longer exists once real data replaces fallback data.
     useEffect(() => {
@@ -263,12 +262,7 @@ export default function BlogPage() {
     const visiblePosts = filteredPosts.slice(0, visibleCount);
     const hasMore = visibleCount < filteredPosts.length;
 
-    const handleNewsletterSubmit = (e) => {
-        e.preventDefault();
-        if (!newsletterEmail.trim()) return;
-        setNewsletterStatus('loading');
-        setTimeout(() => setNewsletterStatus('sent'), 900);
-    };
+
 
     return (
         <div className="blog-page">

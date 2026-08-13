@@ -31,15 +31,15 @@ export default function ProfilePage() {
 
   const joinedDate = data.createdAt
     ? new Date(data.createdAt).toLocaleDateString("en-US", {
-        year: "numeric", month: "long", day: "numeric",
-      })
+      year: "numeric", month: "long", day: "numeric",
+    })
     : "—";
 
   const roleBadgeColor = {
     "Super Admin": "text-bg-danger",
-    Admin:         "text-bg-primary",
-    Recruiter:     "text-bg-warning",
-    JobSeeker:     "text-bg-success",
+    Admin: "text-bg-primary",
+    Recruiter: "text-bg-warning",
+    JobSeeker: "text-bg-success",
   }[role] || "text-bg-secondary";
 
   const isRecruiter = role === "Recruiter";
@@ -68,7 +68,7 @@ export default function ProfilePage() {
       <div className="row g-3">
 
         {/* ── Left card ── */}
-        <div className="col-12 col-xl-4">
+        <div className="col-12 col-xl-8">
           <div className="panel h-100 text-center profile-card">
 
             <div className="profile-cover">
@@ -81,10 +81,10 @@ export default function ProfilePage() {
 
             {pic ? (
               <img className="avatar-img avatar-xl profile-photo" src={
-                        data?.pic
-                            ? `${data.pic}`
-                            : "https://i.pravatar.cc/100"
-                    } alt={name} />
+                data?.pic
+                  ? `${data.pic}`
+                  : "https://i.pravatar.cc/100"
+              } alt={name} />
             ) : (
               <div
                 className="avatar-img avatar-xl profile-photo d-flex align-items-center justify-content-center fw-bold fs-4"
@@ -156,16 +156,16 @@ export default function ProfilePage() {
             </div>
 
             <div className="row g-3 mt-1">
-              <InfoRow icon="bi-person"       label="Full Name" value={name     || "—"} />
-              <InfoRow icon="bi-at"           label="Username"  value={username || "—"} />
-              <InfoRow icon="bi-envelope"     label="Email"     value={email    || "—"} />
-              <InfoRow icon="bi-telephone"    label="Phone"     value={phone    || "—"} />
+              <InfoRow icon="bi-person" label="Full Name" value={name || "—"} />
+              <InfoRow icon="bi-at" label="Username" value={username || "—"} />
+              <InfoRow icon="bi-envelope" label="Email" value={email || "—"} />
+              <InfoRow icon="bi-telephone" label="Phone" value={phone || "—"} />
               {/* ✅ Company row — Recruiter only */}
               {isRecruiter && (
                 <InfoRow icon="bi-building" label="Company" value={company || "—"} />
               )}
-              <InfoRow icon="bi-shield-check" label="Role"   value={role    || "—"} />
-              <InfoRow icon="bi-toggle-on"    label="Status" value="Active" />
+              <InfoRow icon="bi-shield-check" label="Role" value={role || "—"} />
+              <InfoRow icon="bi-toggle-on" label="Status" value="Active" />
             </div>
           </div>
 
