@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const notifications = [
   { to: "/applications", title: "New Job Application received", time: "5 minutes ago", icon: "bi-file-earmark-person" },
-  { to: "/contactUs",    title: "New Inquiry from Contact Us",  time: "25 minutes ago", icon: "bi-envelope" },
+  { to: "/contactUs", title: "New Inquiry from Contact Us", time: "25 minutes ago", icon: "bi-envelope" },
   { to: "/placementApplication", title: "Drive application submitted", time: "1 hour ago", icon: "bi-mortarboard" },
 ];
 
@@ -88,7 +88,7 @@ export default function Navbar({ toggleSidebar }) {
 
         {/* ── Right Side Actions ── */}
         <div className="navbar-actions d-flex align-items-center gap-2 gap-sm-3 ms-auto">
-          
+
           {/* Live System Badge */}
           <div className="admin-live-badge d-none d-xl-flex align-items-center gap-2 px-3 py-1.5 rounded-pill">
             <span className="pulse-dot"></span>
@@ -172,7 +172,7 @@ export default function Navbar({ toggleSidebar }) {
                 </div>
               </li>
               <li>
-                <Link className="dropdown-item rounded-3 py-2" to="/user">
+                <Link className="dropdown-item rounded-3 py-2" to="/profile">
                   <i className="bi bi-person-gear me-2 text-primary"></i> Profile Settings
                 </Link>
               </li>

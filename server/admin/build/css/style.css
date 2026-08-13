@@ -1471,6 +1471,214 @@ html[data-theme="dark"] .dash-bar-track {
   box-shadow: var(--admin-shadow-sm);
 }
 
+/* ── Profile Hero Banner ───────────────────────────────── */
+.profile-hero-banner {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+.profile-hero-cover {
+  position: relative;
+  height: 140px;
+  overflow: hidden;
+}
+
+.profile-hero-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.profile-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.45));
+}
+
+.profile-hero-info {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  margin-top: -40px;
+  flex-wrap: wrap;
+}
+
+.profile-hero-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profile-hero-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid var(--admin-surface);
+  box-shadow: 0 4px 16px rgba(0,0,0,.2);
+  object-fit: cover;
+  display: block;
+  font-size: 1.6rem;
+}
+
+.profile-hero-avatar-initials {
+  font-size: 1.6rem;
+}
+
+.profile-online-dot {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 14px;
+  height: 14px;
+  background: #22c55e;
+  border: 2.5px solid var(--admin-surface);
+  border-radius: 50%;
+}
+
+.profile-hero-meta {
+  flex: 1;
+  min-width: 0;
+  padding-top: 0.5rem;
+}
+
+.profile-hero-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.15rem;
+  color: var(--admin-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-hero-sub {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* ── Profile Sidebar Card ──────────────────────────────── */
+.profile-sidebar-card {
+  padding: 1.5rem !important;
+}
+
+.profile-sidebar-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  border: 3px solid var(--admin-border);
+  box-shadow: var(--admin-shadow-sm);
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+  font-size: 1.8rem;
+}
+
+.profile-sidebar-avatar-initials {
+  font-size: 1.8rem;
+}
+
+.profile-sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--admin-border);
+  margin-top: 0.25rem;
+}
+
+.profile-sidebar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.profile-sidebar-row-last {
+  border-bottom: none;
+}
+
+.profile-sidebar-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--admin-surface-soft);
+  color: var(--bs-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  border: 1px solid var(--admin-border);
+}
+
+/* ── Profile Info Row (in Account Overview) ────────────── */
+.profile-info-row {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  background: var(--admin-surface-soft);
+  transition: background 0.15s;
+}
+
+.profile-info-row:hover {
+  background: var(--admin-hover);
+}
+
+/* ── Profile Stat Cards (Security section) ─────────────── */
+.profile-stat-card {
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  background: var(--admin-surface-soft);
+  padding: 1rem;
+  text-align: center;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.profile-stat-card:hover {
+  box-shadow: var(--admin-shadow-sm);
+  transform: translateY(-2px);
+}
+
+.profile-stat-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.profile-stat-label {
+  font-size: 0.78rem;
+  color: var(--admin-muted);
+  margin-bottom: 0.25rem;
+}
+
+.profile-stat-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--admin-text);
+}
+
+/* ── Responsive tweaks ────────────────────────────────── */
+@media (min-width: 768px) {
+  .profile-hero-cover { height: 180px; }
+  .profile-hero-avatar { width: 96px; height: 96px; }
+  .profile-hero-info { margin-top: -48px; }
+  .profile-hero-name { font-size: 1.5rem; }
+}
+
+@media (max-width: 575.98px) {
+  .profile-hero-info { flex-direction: row; align-items: flex-end; gap: 0.75rem; }
+  .profile-hero-name { font-size: 1.1rem; }
+  .profile-hero-cover { height: 110px; }
+  .profile-hero-avatar { width: 68px; height: 68px; font-size: 1.3rem; }
+  .profile-hero-info { margin-top: -32px; }
+  .profile-sidebar-avatar { width: 72px; height: 72px; font-size: 1.4rem; }
+}
+
 .info-list,
 .settings-list,
 .legend-list {
@@ -2978,6 +3186,13 @@ html[data-theme="dark"] .panel {
   /* 2-col stat cards on tablet */
   .row.g-3 > .col-xl-3 { flex: 0 0 50%; max-width: 50%; }
   .row.g-3 > .col-xl-4 { flex: 0 0 50%; max-width: 50%; }
+
+  /* Profile sidebar card: always full-width on tablet/mobile (below xl) */
+  .row.g-3 > .profile-col-sidebar {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
 
   /* Dashboard KPI row: 2 per row */
   .dash-kpi-card { min-height: auto; }
