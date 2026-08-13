@@ -136,24 +136,22 @@ export default function Footer() {
             </div>
 
             <div className="col-6 col-md-3 col-lg-2 footer-v2__links">
-              <h4>Useful Links</h4>
+              <h4>Quick Links</h4>
               <ul>
                 <li><Link to="/"><i className="bi bi-chevron-right"></i>Home</Link></li>
                 <li><Link to="/about"><i className="bi bi-chevron-right"></i>About Us</Link></li>
-                <li><Link to="/services"><i className="bi bi-chevron-right"></i>Our Services</Link></li>
-                <li><Link to="/placementjobs"><i className="bi bi-chevron-right"></i>Placements</Link></li>
-                <li><Link to="/contactus"><i className="bi bi-chevron-right"></i>Contact Us</Link></li>
+                <li><Link to="/services"><i className="bi bi-chevron-right"></i>Services</Link></li>
+                <li><Link to="/portfolio"><i className="bi bi-chevron-right"></i>Portfolio</Link></li>
               </ul>
             </div>
 
             <div className="col-6 col-md-3 col-lg-2 footer-v2__links">
-              <h4>Our Services</h4>
+              <h4>Explore</h4>
               <ul>
-                <li><Link to="/services"><i className="bi bi-chevron-right"></i>Software Dev</Link></li>
-                <li><Link to="/services"><i className="bi bi-chevron-right"></i>Digital Marketing</Link></li>
-                <li><Link to="/services"><i className="bi bi-chevron-right"></i>IT Training</Link></li>
-                <li><Link to="/services"><i className="bi bi-chevron-right"></i>Cloud & Security</Link></li>
-                <li><Link to="/services"><i className="bi bi-chevron-right"></i>IT Consulting</Link></li>
+                <li><Link to="/blog"><i className="bi bi-chevron-right"></i>Blog</Link></li>
+                <li><Link to="/career"><i className="bi bi-chevron-right"></i>Careers</Link></li>
+                <li><Link to="/placement"><i className="bi bi-chevron-right"></i>Placements</Link></li>
+                <li><Link to="/contactus"><i className="bi bi-chevron-right"></i>Contact Us</Link></li>
               </ul>
             </div>
 
