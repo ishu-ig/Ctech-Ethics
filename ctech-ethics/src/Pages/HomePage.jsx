@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
 import Services from '../Components/Service';
@@ -51,6 +51,7 @@ const heroWordVariant = {
 export default function HomePage() {
   const [idx, setIdx] = useState(0);
   const [isConsultancyOpen, setIsConsultancyOpen] = useState(false);
+  const isFirstRender = useRef(true);
 
   const dispatch = useDispatch();
   const rawBannerData = useSelector((state) => state.BannerStateData);
@@ -110,13 +111,14 @@ export default function HomePage() {
 
             {/* ── Left: Text Content ── */}
             <div className="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={`text-${idx}`}
                   variants={stagger}
-                  initial="hidden"
+                  initial={isFirstRender.current ? false : "hidden"}
                   animate="visible"
                   exit="exit"
+                  onAnimationComplete={() => { isFirstRender.current = false; }}
                 >
                   {/* Badge */}
                   <motion.div variants={slideUp} style={{ marginBottom: 20 }}>
@@ -144,7 +146,7 @@ export default function HomePage() {
                   </motion.h1>
 
                   {/* Animated dynamic headline word */}
-                  <AnimatePresence mode="wait">
+                  <AnimatePresence mode="wait" initial={false}>
                     <motion.h1
                       key={`word-${idx}`}
                       variants={heroWordVariant}
