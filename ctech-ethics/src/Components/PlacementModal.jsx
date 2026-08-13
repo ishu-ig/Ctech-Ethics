@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import SimpleReactValidator from 'simple-react-validator';
 
 const QUALIFICATIONS = [
   'B.Tech / B.E.',
@@ -29,9 +30,24 @@ export default function PlacementModal({ isOpen, onClose }) {
     fileName: ''
   });
 
-  const [touched, setTouched] = useState({});
+  const [, forceUpdate] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // SimpleReactValidator — one instance per component mount
+  const validator = useRef(
+    new SimpleReactValidator({
+      autoForceUpdate: { forceUpdate: () => forceUpdate((n) => n + 1) },
+      className: 'field-error',
+      messages: {
+        required:    'This field is required.',
+        email:       'Enter a valid email address.',
+        phone:       'Enter a valid phone number.',
+        min:         'Must be at least :min characters.',
+        alpha_space: 'Only letters and spaces are allowed.',
+      },
+    })
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,12 +60,13 @@ export default function PlacementModal({ isOpen, onClose }) {
     }
   };
 
-  const handleBlur = (field) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validator.current.allValid()) {
+      validator.current.showMessages();
+      forceUpdate((n) => n + 1);
+      return;
+    }
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
@@ -59,16 +76,9 @@ export default function PlacementModal({ isOpen, onClose }) {
 
   const handleReset = () => {
     setIsSubmitted(false);
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      college: '',
-      qualification: '',
-      role: '',
-      fileName: ''
-    });
-    setTouched({});
+    setFormData({ name: '', email: '', phone: '', college: '', qualification: '', role: '', fileName: '' });
+    validator.current.hideMessages();
+    forceUpdate((n) => n + 1);
     onClose();
   };
 
@@ -146,6 +156,7 @@ export default function PlacementModal({ isOpen, onClose }) {
                   key="form-view"
                   onSubmit={handleSubmit}
                   className="consultancy-form-body"
+                  noValidate
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
@@ -174,12 +185,9 @@ export default function PlacementModal({ isOpen, onClose }) {
                           placeholder="Full Name *"
                           value={formData.name}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('name')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('name')}
                         />
-                        {touched.name && !formData.name && (
-                          <span className="field-error">Full Name is required</span>
-                        )}
+                        {validator.current.message('name', formData.name, 'required|alpha_space|min:2')}
                       </div>
                     </div>
 
@@ -194,12 +202,9 @@ export default function PlacementModal({ isOpen, onClose }) {
                           placeholder="Email Address *"
                           value={formData.email}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('email')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('email')}
                         />
-                        {touched.email && !formData.email && (
-                          <span className="field-error">Valid Email is required</span>
-                        )}
+                        {validator.current.message('email', formData.email, 'required|email')}
                       </div>
                     </div>
 
@@ -214,12 +219,9 @@ export default function PlacementModal({ isOpen, onClose }) {
                           placeholder="Phone Number *"
                           value={formData.phone}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('phone')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('phone')}
                         />
-                        {touched.phone && !formData.phone && (
-                          <span className="field-error">Phone Number is required</span>
-                        )}
+                        {validator.current.message('phone', formData.phone, 'required|phone')}
                       </div>
                     </div>
 
@@ -234,12 +236,9 @@ export default function PlacementModal({ isOpen, onClose }) {
                           placeholder="College / University *"
                           value={formData.college}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('college')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('college')}
                         />
-                        {touched.college && !formData.college && (
-                          <span className="field-error">College name is required</span>
-                        )}
+                        {validator.current.message('college', formData.college, 'required|min:3')}
                       </div>
                     </div>
 
@@ -252,17 +251,14 @@ export default function PlacementModal({ isOpen, onClose }) {
                           className="consultancy-select"
                           value={formData.qualification}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('qualification')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('qualification')}
                         >
                           <option value="" disabled>Select Highest Qualification *</option>
                           {QUALIFICATIONS.map((q) => (
                             <option key={q} value={q}>{q}</option>
                           ))}
                         </select>
-                        {touched.qualification && !formData.qualification && (
-                          <span className="field-error">Please select qualification</span>
-                        )}
+                        {validator.current.message('qualification', formData.qualification, 'required')}
                       </div>
                     </div>
 
@@ -275,17 +271,14 @@ export default function PlacementModal({ isOpen, onClose }) {
                           className="consultancy-select"
                           value={formData.role}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('role')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('role')}
                         >
                           <option value="" disabled>Select Interested Role *</option>
                           {ROLES.map((r) => (
                             <option key={r} value={r}>{r}</option>
                           ))}
                         </select>
-                        {touched.role && !formData.role && (
-                          <span className="field-error">Please select a role</span>
-                        )}
+                        {validator.current.message('role', formData.role, 'required')}
                       </div>
                     </div>
 
@@ -302,17 +295,18 @@ export default function PlacementModal({ isOpen, onClose }) {
                             id="resume-file-input"
                             accept=".pdf,.doc,.docx"
                             onChange={handleFileChange}
+                            onBlur={() => validator.current.showMessageFor('resume')}
                             style={{ display: 'none' }}
-                            required={!formData.fileName}
                           />
                           <span className="file-upload-name ms-3 text-truncate">
                             {formData.fileName || 'No file chosen'}
                           </span>
                         </div>
+                        {validator.current.message('resume', formData.fileName, 'required')}
                       </div>
                     </div>
 
-                    {/* Buttons: Submit Application & Close */}
+                    {/* Buttons */}
                     <div className="col-12 mt-4 d-flex align-items-center justify-content-end gap-3">
                       <motion.button
                         type="button"

@@ -13,6 +13,7 @@ import ContactUsPage from "./Pages/ContactUsPage";
 import BlogDetailsPage from "./Pages/BlogDetailPage";
 import ServiceDetailsPage from "./Pages/ServiceDetailPage";
 import PortfolioPage from "./Pages/PortfolioPage";
+import PortfolioDetailPage from "./Pages/PortfolioDetailPage";
 
 export default function App() {
   return (
@@ -31,6 +32,9 @@ export default function App() {
         <Route path="/career" element={<CareerPage />} />
         <Route path="/placement" element={<PlacementJobsPage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
+        <Route path="/portfolio/:id" element={<PortfolioDetailPage />} />
+        <Route path="/portfoliodetail" element={<PortfolioDetailPage />} />
+        <Route path="/portfoliodetail/:id" element={<PortfolioDetailPage />} />
         <Route path="/jobdetails" element={<JobDetailPage />} />
         <Route path="/jobdetails/:id" element={<JobDetailPage />} />
         <Route path="/contactus" element={<ContactUsPage />} />

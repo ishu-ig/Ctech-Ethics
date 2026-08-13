@@ -1,10 +1,13 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
     MapPin, Briefcase, IndianRupee, Send, X, ArrowRight,
     UploadCloud, CheckCircle2,
-    GraduationCap, Clock3, Building2
+    GraduationCap, Clock3, Building2, User, Mail, Phone, FileText, Sparkles, Loader2
 } from "lucide-react";
+import { createApplication } from "../Redux/ActionCreators/ApplicationActionCreators";
+import { createPlacementApplication } from "../Redux/ActionCreators/PlacementAppicationActionCreator";
 
 // --- Import Swiper ---
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -145,6 +148,19 @@ export default function JobCard({
     const link = detailsLink || `/jobdetails/${job?.id || job?._id || ''}`;
     const skillsList = Array.isArray(job?.skills) ? job.skills : [];
 
+    const displayTitle = job?.jobTitle || job?.title || "Untitled Role";
+    const displayCompany = job?.companyName || job?.company || (isPlacement ? "Partner Tech Firm" : "CTech Ethic");
+    const displayCategory = job?.category || job?.department || "Technical";
+    const displayDescription = job?.shortDescription || job?.description || "";
+
+    let displayLocation = "Remote";
+    if (typeof job?.location === "string" && job.location) {
+        displayLocation = job.location;
+    } else if (job?.location && typeof job.location === "object") {
+        const locParts = [job.location.city, job.location.state].filter(Boolean);
+        displayLocation = locParts.length > 0 ? locParts.join(", ") : "Remote";
+    }
+
     return (
         <Reveal className="glass-card job-card d-flex flex-column h-100" delay={delay}>
 
@@ -152,20 +168,20 @@ export default function JobCard({
             {isPlacement ? (
                 <div className="job-card-top mb-2 mb-md-3">
                     <div className="d-none d-md-block">
-                        <CompanyLogo company={job?.company} theme={job?.theme} />
+                        <CompanyLogo company={displayCompany} theme={job?.theme} />
                     </div>
                     <div className="job-card-heading">
-                        <span className="job-dept-pill mb-1">{job?.category}</span>
-                        <h3 className="job-card-title text-truncate">{job?.title}</h3>
+                        <span className="job-dept-pill mb-1">{displayCategory}</span>
+                        <h3 className="job-card-title text-truncate">{displayTitle}</h3>
                         <span className="job-company text-truncate d-block">
-                            <Building2 size={13} /> {job?.company}
+                            <Building2 size={13} /> {displayCompany}
                         </span>
                     </div>
                 </div>
             ) : (
                 <div className="job-card-header mb-2 mb-md-3">
                     <div className="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-2">
-                        <span className="job-dept-pill">{job?.department || job?.category}</span>
+                        <span className="job-dept-pill">{displayCategory}</span>
                         {job?.salary && (
                             <span className="job-salary-badge">
                                 <IndianRupee size={12} className="me-1" />
@@ -173,25 +189,25 @@ export default function JobCard({
                             </span>
                         )}
                     </div>
-                    <h3 className="job-card-title text-truncate">{job?.title}</h3>
+                    <h3 className="job-card-title text-truncate">{displayTitle}</h3>
                 </div>
             )}
 
             {/* --- BODY --- */}
             {/* Description is strictly hidden on mobile to save vertical space */}
-            <p className="job-desc mb-3 d-none d-md-block">{job?.description}</p>
+            <p className="job-desc mb-3 d-none d-md-block">{displayDescription}</p>
 
             <div className="job-meta-row mb-2 mb-md-3">
                 {/* Hide Type & Experience on Mobile */}
                 <span className="meta-pill d-none d-md-inline-flex">
-                    <Briefcase size={12} /> {job?.type}
+                    <Briefcase size={12} /> {job?.type || "Full-Time"}
                 </span>
                 <span className="meta-pill d-none d-md-inline-flex">
-                    <GraduationCap size={12} /> {job?.experience}
+                    <GraduationCap size={12} /> {job?.experience || "Fresher"}
                 </span>
                 {/* Show only Location on Mobile */}
                 <span className="meta-pill text-truncate" style={{ maxWidth: '100%' }}>
-                    <MapPin size={12} /> {job?.location}
+                    <MapPin size={12} /> {displayLocation}
                 </span>
 
                 {/* Placement Salary visibility rules */}
@@ -204,32 +220,21 @@ export default function JobCard({
             </div>
 
             {/* --- SKILLS CAROUSEL --- */}
-            <div className="mb-2 mb-md-4" style={{ overflow: 'hidden' }}>
-
-                {/* Desktop View: Normal Wrap Layout */}
-                <div className="d-none d-md-flex flex-wrap gap-2">
+            <div className="mb-2 mb-md-3 w-100 skill-pills-carousel" style={{ overflow: 'hidden' }}>
+                <Swiper
+                    modules={[FreeMode]}
+                    slidesPerView="auto"
+                    spaceBetween={8}
+                    freeMode={true}
+                    grabCursor={true}
+                    className="w-100"
+                >
                     {skillsList.map((s) => (
-                        <span key={s} className="skill-pill">{s}</span>
+                        <SwiperSlide key={s} style={{ width: "auto" }}>
+                            <span className="skill-pill d-inline-block text-nowrap">{s}</span>
+                        </SwiperSlide>
                     ))}
-                </div>
-
-                {/* Mobile View: Swiper Carousel */}
-                <div className="d-block d-md-none w-100">
-                    <Swiper
-                        modules={[FreeMode]}
-                        slidesPerView="auto"
-                        spaceBetween={6}
-                        freeMode={true}
-                        grabCursor={true}
-                    >
-                        {skillsList.map((s) => (
-                            <SwiperSlide key={s} style={{ width: "auto" }}>
-                                <span className="skill-pill d-block">{s}</span>
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
-                </div>
-
+                </Swiper>
             </div>
 
             {/* --- FOOTER / ACTIONS --- */}
@@ -264,16 +269,23 @@ export default function JobCard({
 
 const EMPTY_FORM = { name: "", email: "", phone: "", message: "" };
 
-export function ApplyModal({ open, job, onClose }) {
+export function ApplyModal({ open, job, onClose, isPlacement = false }) {
+    const dispatch = useDispatch();
     const [form, setForm] = useState(EMPTY_FORM);
     const [fileName, setFileName] = useState("");
+    const [resumeFile, setResumeFile] = useState(null);
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         if (open) {
             setForm(EMPTY_FORM);
             setFileName("");
+            setResumeFile(null);
             setSubmitted(false);
+            setLoading(false);
+            setError("");
         }
     }, [open, job]);
 
@@ -287,13 +299,49 @@ export function ApplyModal({ open, job, onClose }) {
 
     const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setSubmitted(true);
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setResumeFile(file);
+            setFileName(file.name);
+        }
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!resumeFile) {
+            setError("Please upload your resume to continue.");
+            return;
+        }
+        setLoading(true);
+        setError("");
+        try {
+            const formData = new FormData();
+            formData.append("name", form.name);
+            formData.append("email", form.email);
+            formData.append("phone", form.phone);
+            formData.append("message", form.message);
+            formData.append("resume", resumeFile);
+            formData.append("jobId", job?._id || job?.id || "");
+            formData.append("jobTitle", job?.jobTitle || job?.title || "General Application");
+
+            if (isPlacement) {
+                dispatch(createPlacementApplication(formData));
+            } else {
+                dispatch(createApplication(formData));
+            }
+            setSubmitted(true);
+        } catch (err) {
+            setError("Something went wrong. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const resolvedTitle = job?.jobTitle || job?.title;
+    const resolvedCompany = job?.companyName || job?.company;
     const jobLabel = job
-        ? `${job.title}${job.company ? ` · ${job.company}` : ""}`
+        ? `${resolvedTitle || 'Application'}${resolvedCompany ? ` · ${resolvedCompany}` : ""}`
         : "General Application";
 
     return (
@@ -301,13 +349,16 @@ export function ApplyModal({ open, job, onClose }) {
             <div className="cjd-modal-card" role="dialog" aria-modal="true">
                 <div className="cjd-modal-accent" />
                 <button className="cjd-modal-close" onClick={onClose} aria-label="Close">
-                    <X size={16} />
+                    <X size={18} />
                 </button>
 
                 {!submitted ? (
                     <>
                         <div className="cjd-modal-header">
-                            <span className="cjd-modal-eyebrow">{job ? "Apply for" : "Application"}</span>
+                            <div className="cjd-modal-badge">
+                                <Sparkles size={14} />
+                                <span>{job ? "Direct Application" : "General Application"}</span>
+                            </div>
                             <h3 className="cjd-modal-title">{jobLabel}</h3>
                             <p className="cjd-modal-sub">
                                 {job
@@ -318,54 +369,96 @@ export function ApplyModal({ open, job, onClose }) {
 
                         <form className="cjd-form" onSubmit={handleSubmit}>
                             <div className="cjd-field">
-                                <label>Full Name</label>
-                                <input required type="text" placeholder="Jane Cooper" value={form.name} onChange={update("name")} />
+                                <label><User size={14} /> Full Name</label>
+                                <input required type="text" placeholder="e.g. Jane Cooper" value={form.name} onChange={update("name")} />
                             </div>
 
                             <div className="cjd-field-row">
                                 <div className="cjd-field">
-                                    <label>Email</label>
-                                    <input required type="email" placeholder="jane@email.com" value={form.email} onChange={update("email")} />
+                                    <label><Mail size={14} /> Email Address</label>
+                                    <input required type="email" placeholder="jane@example.com" value={form.email} onChange={update("email")} />
                                 </div>
                                 <div className="cjd-field">
-                                    <label>Phone Number</label>
+                                    <label><Phone size={14} /> Phone Number</label>
                                     <input required type="tel" placeholder="+91 98765 43210" value={form.phone} onChange={update("phone")} />
                                 </div>
                             </div>
 
                             <div className="cjd-field">
-                                <label>Resume</label>
-                                <label className="cjd-file-drop">
-                                    <UploadCloud size={16} />
-                                    <span>{fileName || "Upload PDF or DOCX (max 5MB)"}</span>
+                                <label><FileText size={14} /> Resume / CV</label>
+                                <label className={`cjd-file-drop ${fileName ? 'has-file' : ''}`}>
+                                    {fileName ? (
+                                        <div className="cjd-file-selected">
+                                            <div className="cjd-file-icon">
+                                                <CheckCircle2 size={18} />
+                                            </div>
+                                            <div className="cjd-file-info">
+                                                <span className="cjd-file-name">{fileName}</span>
+                                                <span className="cjd-file-sub">Resume attached</span>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="cjd-file-remove"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setResumeFile(null);
+                                                    setFileName("");
+                                                }}
+                                                title="Remove file"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="cjd-file-placeholder">
+                                            <div className="cjd-upload-icon-box">
+                                                <UploadCloud size={20} />
+                                            </div>
+                                            <div>
+                                                <span className="cjd-upload-main">Click to upload resume</span>
+                                                <span className="cjd-upload-sub">PDF or DOCX (Max 5MB)</span>
+                                            </div>
+                                        </div>
+                                    )}
                                     <input
                                         type="file"
-                                        required
+                                        required={!resumeFile}
                                         accept=".pdf,.doc,.docx"
                                         hidden
-                                        onChange={(e) => setFileName(e.target.files?.[0]?.name || "")}
+                                        onChange={handleFileChange}
                                     />
                                 </label>
                             </div>
 
                             <div className="cjd-field">
-                                <label>Cover Message <em>(optional)</em></label>
-                                <textarea rows={4} placeholder="Why are you a great fit for this role?" value={form.message} onChange={update("message")} />
+                                <label><FileText size={14} /> Cover Note <em>(optional)</em></label>
+                                <textarea rows={3} placeholder="Why are you a great fit for this role?" value={form.message} onChange={update("message")} />
                             </div>
 
-                            <button type="submit" className="cjd-submit-btn">
-                                Submit Application <ArrowRight size={16} />
+                            {error && (
+                                <p style={{ color: "#f87171", fontSize: "0.85rem", margin: 0 }}>{error}</p>
+                            )}
+
+                            <button type="submit" className="cjd-submit-btn" disabled={loading}>
+                                {loading ? (
+                                    <>
+                                        <Loader2 size={16} className="cjd-spinner" /> Submitting Application...
+                                    </>
+                                ) : (
+                                    <>Submit Application <ArrowRight size={16} /></>
+                                )}
                             </button>
                         </form>
                     </>
                 ) : (
                     <div className="cjd-success">
-                        <div className="cjd-success-icon"><CheckCircle2 size={26} /></div>
-                        <h3>Application sent</h3>
+                        <div className="cjd-success-icon"><CheckCircle2 size={30} /></div>
+                        <h3>Application Submitted!</h3>
                         <p>
-                            Thanks, {form.name.split(" ")[0] || "there"} — our team will review
-                            {job ? <> your application for <strong>{jobLabel}</strong></> : " your profile"} and
-                            reach out within 3–5 business days.
+                            Thanks, <strong>{form.name.split(" ")[0] || "there"}</strong> — our recruitment team will review
+                            {job ? <> your profile for <strong>{jobLabel}</strong></> : " your details"} and
+                            get back to you within 3–5 business days.
                         </p>
                         <button className="cjd-submit-btn" onClick={onClose}>Done</button>
                     </div>

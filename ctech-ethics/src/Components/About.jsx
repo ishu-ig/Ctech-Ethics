@@ -137,7 +137,7 @@ export default function About({
                       <i className={`bi ${icon || 'bi-check-circle'} fs-4`}></i>
                     </div>
                     <div>
-                      <h6 className="fw-semibold mb-1 text-white">{text}</h6>
+                      <h6 className="fw-semibold mb-1 about-feature-text">{text}</h6>
                     </div>
                   </div>
                 ))}
@@ -146,12 +146,12 @@ export default function About({
               {/* CTAs */}
               <motion.div variants={fadeUp} className="d-flex flex-wrap gap-3 align-items-center">
                 {primaryCta && (
-                  <Link to={primaryCta.to} className="btn btn-primary btn-lg rounded-pill px-4 fw-semibold">
-                    {primaryCta.label}
+                  <Link to={primaryCta.to} className="about-btn-primary">
+                    {primaryCta.label} <i className="bi bi-arrow-right ms-1"></i>
                   </Link>
                 )}
                 {secondaryCta && (
-                  <Link to={secondaryCta.to} className="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                  <Link to={secondaryCta.to} className="about-btn-secondary">
                     {secondaryCta.label}
                   </Link>
                 )}

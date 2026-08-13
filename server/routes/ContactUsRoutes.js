@@ -1,5 +1,5 @@
 const ContactUsRouter = require("express").Router()
-const {verifyAdmin, } = require("../middleware/authentication")
+const { verifyAdmin, } = require("../middleware/authentication")
 const {
     createRecord,
     getRecord,
@@ -9,10 +9,10 @@ const {
 } = require("../controllers/ContactUsController")
 
 ContactUsRouter.post("", createRecord)
-ContactUsRouter.get("",  getRecord)
-ContactUsRouter.get("/:_id",verifyAdmin,  getSingleRecord)
-ContactUsRouter.put("/:_id",verifyAdmin,  updateRecord)
-ContactUsRouter.delete("/:_id",verifyAdmin,  deleteRecord)
+ContactUsRouter.get("", getRecord)
+ContactUsRouter.get("/:_id", getSingleRecord)
+ContactUsRouter.put("/:_id", updateRecord)
+ContactUsRouter.delete("/:_id", deleteRecord)
 
 
 module.exports = ContactUsRouter

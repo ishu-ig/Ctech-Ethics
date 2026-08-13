@@ -99,7 +99,7 @@ export default function HeroSection({
                     </h1>
 
                     {/* Accent gradient line */}
-                    <div className="flex-hero-accent-line" />
+                    {title && <div className="flex-hero-accent-line" />}
 
                     {/* Subtitle if provided */}
                     {hasSubtitle && (

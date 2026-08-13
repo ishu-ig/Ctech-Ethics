@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getService } from '../Redux/ActionCreators/ServiceActionCreators';
 import { getSubService } from '../Redux/ActionCreators/SubServiceActionCreators';
+import ConsultancyModal from '../Components/ConsultancyModal';
 
 /* ════════════════════════════════════════════════════════════
    FALLBACK DATA — shown when no matching service is in Redux
@@ -174,7 +175,7 @@ export default function ServiceDetailsPage() {
           </motion.div>
 
           <h1 className="flex-hero-title">{service.title}</h1>
-          <div className="flex-hero-accent-line" />
+          {service?.title && <div className="flex-hero-accent-line" />}
           <p className="flex-hero-subtitle">{service.tagline}</p>
 
           <div className="flex-hero-cta">
@@ -513,26 +514,12 @@ export default function ServiceDetailsPage() {
         </motion.div>
       </section>
 
-      {/* ══════════════ CONSULTATION MODAL ══════════════ */}
-      {consultationOpen && (
-        <div className="modal-backdrop" onClick={() => setConsultationOpen(false)} role="dialog" aria-modal="true">
-          <div className="modal-shell" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setConsultationOpen(false)} aria-label="Close">
-              <i className="bi bi-x-lg"></i>
-            </button>
-            <div className="modal-head">
-              <h3>Book a Consultation</h3>
-              <p>Tell us a bit about your project — we'll reply within one business day.</p>
-            </div>
-            <form className="apply-form" onSubmit={(e) => e.preventDefault()}>
-              <label>Full name<input type="text" placeholder="Jane Doe" required /></label>
-              <label>Work email<input type="email" placeholder="jane@company.com" required /></label>
-              <label>What are you building? <em>(optional)</em><textarea rows="3" placeholder="A quick summary helps us prep." /></label>
-              <button type="submit" className="btn btn-primary btn-block">Send Request</button>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* ══════════════ CONSULTANCY MODAL ══════════════ */}
+      <ConsultancyModal
+        isOpen={consultationOpen}
+        onClose={() => setConsultationOpen(false)}
+        defaultService={service.title}
+      />
     </div>
   );
 }

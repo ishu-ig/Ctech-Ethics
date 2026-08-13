@@ -1,18 +1,39 @@
 import React, { useState, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useDispatch } from 'react-redux';
+import { createContactUs } from '../Redux/ActionCreators/ContactUsActionCreators';
+import SimpleReactValidator from 'simple-react-validator';
 
 
 export default function ContactUs() {
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     subject: '',
-    message: '',
-    service: 'Software Dev'
+    message: ''
   });
 
+  const [, forceUpdate] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // SimpleReactValidator — one instance per component mount
+  const validator = useRef(
+    new SimpleReactValidator({
+      autoForceUpdate: { forceUpdate: () => forceUpdate((n) => n + 1) },
+      className: 'field-error',
+      messages: {
+        required:    'This field is required.',
+        email:       'Enter a valid email address.',
+        phone:       'Enter a valid phone number.',
+        min:         'Must be at least :min characters.',
+        alpha_space: 'Only letters and spaces are allowed.',
+      },
+    })
+  );
 
   const sectionRef = useRef(null);
   const inView = useInView(sectionRef, { once: true, margin: '-60px' });
@@ -22,23 +43,27 @@ export default function ContactUs() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleServiceSelect = (serviceName) => {
-    setFormData((prev) => ({ ...prev, service: serviceName }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validator.current.allValid()) {
+      validator.current.showMessages();
+      forceUpdate((n) => n + 1);
+      return;
+    }
     setIsSubmitting(true);
-    // Simulate API network call
+    dispatch(createContactUs(formData));
+    // Saga fires POST; optimistically show success after it has had time to fire.
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 1200);
+    }, 800);
   };
 
   const handleReset = () => {
     setIsSubmitted(false);
-    setFormData({ name: '', email: '', subject: '', message: '', service: 'Software Dev' });
+    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    validator.current.hideMessages();
+    forceUpdate((n) => n + 1);
   };
 
   return (
@@ -56,7 +81,7 @@ export default function ContactUs() {
             <i className="bi bi-envelope-paper-fill me-1"></i> Get In Touch
           </span>
           <h2>
-            Let&apos;s Connect & <span className="contact-gradient-text">Build Together</span>
+            Let&apos;s Connect &amp; <span className="contact-gradient-text">Build Together</span>
           </h2>
           <p>Have a project in mind, need software consulting, or want to enroll in our career IT training programs? Reach out to our expert team.</p>
         </motion.div>
@@ -217,6 +242,7 @@ export default function ContactUs() {
                     key="form"
                     onSubmit={handleSubmit}
                     className="contact-form-inner"
+                    noValidate
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
@@ -236,9 +262,10 @@ export default function ContactUs() {
                               placeholder="John Doe"
                               value={formData.name}
                               onChange={handleChange}
-                              required
+                              onBlur={() => validator.current.showMessageFor('name')}
                             />
                           </div>
+                          {validator.current.message('name', formData.name, 'required|alpha_space|min:2')}
                         </div>
                       </div>
 
@@ -256,14 +283,36 @@ export default function ContactUs() {
                               placeholder="john@example.com"
                               value={formData.email}
                               onChange={handleChange}
-                              required
+                              onBlur={() => validator.current.showMessageFor('email')}
                             />
                           </div>
+                          {validator.current.message('email', formData.email, 'required|email')}
+                        </div>
+                      </div>
+
+                      {/* Phone */}
+                      <div className="col-md-6">
+                        <div className="form-group-custom">
+                          <label htmlFor="phone-field" className="form-label-custom">Your Phone</label>
+                          <div className="input-with-icon">
+                            <i className="bi bi-telephone input-icon"></i>
+                            <input
+                              type="tel"
+                              name="phone"
+                              id="phone-field"
+                              className="form-control-custom"
+                              placeholder="+1 555 555 5555"
+                              value={formData.phone}
+                              onChange={handleChange}
+                              onBlur={() => validator.current.showMessageFor('phone')}
+                            />
+                          </div>
+                          {validator.current.message('phone', formData.phone, 'required|phone')}
                         </div>
                       </div>
 
                       {/* Subject */}
-                      <div className="col-md-12">
+                      <div className="col-md-6">
                         <div className="form-group-custom">
                           <label htmlFor="subject-field" className="form-label-custom">Subject</label>
                           <div className="input-with-icon">
@@ -276,9 +325,10 @@ export default function ContactUs() {
                               placeholder="Project Inquiry / Training Question"
                               value={formData.subject}
                               onChange={handleChange}
-                              required
+                              onBlur={() => validator.current.showMessageFor('subject')}
                             />
                           </div>
+                          {validator.current.message('subject', formData.subject, 'required|min:3')}
                         </div>
                       </div>
 
@@ -296,9 +346,10 @@ export default function ContactUs() {
                               placeholder="Tell us about your requirements, timeline, and goals..."
                               value={formData.message}
                               onChange={handleChange}
-                              required
+                              onBlur={() => validator.current.showMessageFor('message')}
                             />
                           </div>
+                          {validator.current.message('message', formData.message, 'required|min:10')}
                         </div>
                       </div>
 

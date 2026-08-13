@@ -290,17 +290,17 @@ export default function Navbar() {
                     <span className="brand-accent">Ethics</span>
                   </span>
                 </div>
-                {/* <div className="d-flex align-items-center gap-2">
-                  <ThemeToggle />
+                <div className="d-flex align-items-center gap-2">
                   <motion.button
-                    className="drawer-close bi bi-x"
+                    type="button"
+                    className="drawer-close bi bi-x-lg"
                     onClick={() => setIsOpen(false)}
                     aria-label="Close menu"
                     whileHover={{ rotate: 90, scale: 1.15 }}
                     whileTap={{ scale: 0.9 }}
                     style={{ background: 'none', border: 'none', padding: 0 }}
                   />
-                </div> */}
+                </div>
               </div>
 
               {/* Nav Links */}

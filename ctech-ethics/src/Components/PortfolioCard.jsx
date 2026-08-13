@@ -18,12 +18,12 @@ export default function PortfolioCard({ project = {} }) {
             return project.tech.map((t, idx) => {
                 if (typeof t === 'string') {
                     const iconClass = t.startsWith('fa-') || t.startsWith('bi-') ? t : `fa-brands fa-${t}`;
-                    return { key: idx, icon: iconClass, color: '#6ea8ff' };
+                    return { key: idx, icon: iconClass, color: 'var(--portfolio-icon-color, #6ea8ff)' };
                 }
-                return { key: idx, icon: t.icon || 'fa-code', color: t.color || '#6ea8ff' };
+                return { key: idx, icon: t.icon || 'fa-code', color: t.color || 'var(--portfolio-icon-color, #6ea8ff)' };
             });
         }
-        return [{ key: 0, icon: 'fa-solid fa-code', color: '#6ea8ff' }];
+        return [{ key: 0, icon: 'fa-solid fa-code', color: 'var(--portfolio-icon-color, #6ea8ff)' }];
     }, [project.tech]);
 
     return (
@@ -36,15 +36,8 @@ export default function PortfolioCard({ project = {} }) {
             className="h-100 w-100"
         >
             <motion.div
-                whileHover={{ y: -6, borderColor: 'rgba(110, 168, 255, 0.4)' }}
+                whileHover={{ y: -6 }}
                 className="h-100 d-flex flex-column position-relative overflow-hidden portfolio-card-box"
-                style={{
-                    background: 'rgba(10, 15, 25, 0.6)',
-                    backdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: '16px',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
-                }}
             >
                 {/* ── Image Container ── */}
                 <div className="portfolio-card-img-wrap" style={{ overflow: 'hidden', position: 'relative' }}>
@@ -57,12 +50,7 @@ export default function PortfolioCard({ project = {} }) {
                     />
                     {/* Category Overlay Badge */}
                     {project.category && (
-                        <div className="portfolio-card-badge" style={{
-                            position: 'absolute',
-                            background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)',
-                            color: '#fff', border: '1px solid rgba(255,255,255,0.15)',
-                            fontWeight: 600
-                        }}>
+                        <div className="portfolio-card-badge position-absolute">
                             {project.category}
                         </div>
                     )}
@@ -70,15 +58,15 @@ export default function PortfolioCard({ project = {} }) {
 
                 {/* ── Content Body ── */}
                 <div className="portfolio-card-body d-flex flex-column flex-grow-1">
-                    <h3 className="portfolio-card-title mb-2" style={{ fontFamily: FONT_HEAD, fontWeight: 700, color: '#fff' }}>
+                    <h3 className="portfolio-card-title mb-2" style={{ fontFamily: FONT_HEAD, fontWeight: 700 }}>
                         {project.title}
                     </h3>
-                    <p className="portfolio-card-desc mb-3 d-none d-sm-block" style={{ color: 'rgba(255,255,255,0.7)', flexGrow: 1 }}>
+                    <p className="portfolio-card-desc mb-3 d-none d-sm-block" style={{ flexGrow: 1 }}>
                         {displayDesc}
                     </p>
 
                     {/* Footer: Tech Stack & Link */}
-                    <div className="portfolio-card-footer d-flex align-items-center justify-content-between mt-auto pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div className="portfolio-card-footer d-flex align-items-center justify-content-between mt-auto pt-2">
 
                         {/* Tech Stack Icons */}
                         <div className="d-none d-sm-flex gap-2">
@@ -94,9 +82,9 @@ export default function PortfolioCard({ project = {} }) {
 
                         {/* View Details Link */}
                         <Link
-                            to={project.link || "#"}
+                            to={project._id ? `/portfolio/${project._id}` : (project.id ? `/portfolio/${project.id}` : (project.link && project.link.startsWith('/') ? project.link : '/portfolio/1'))}
                             className="portfolio-card-link ms-auto ms-sm-0"
-                            style={{ color: '#6ea8ff', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+                            style={{ fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
                             onClick={() => window.scrollTo(0, 0)}
                         >
                             <span>View Case</span>

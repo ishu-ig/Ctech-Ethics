@@ -15,6 +15,8 @@ const SubServiceRouter = require('./SubServiceRoutes')
 const PlacedStudentRouter = require('./PlacedStudentRoutes')
 const NewsletterRouter = require('./NewsletterRoutes')
 const ContactUsRouter = require('./ContactUsRoutes')
+const ApplicationRouter = require('./ApplicationRoutes')
+const PlacementApplicationRouter = require('./PlacementApplicationRoutes')
 
 const Router = require('express').Router()
 
@@ -35,6 +37,7 @@ Router.use("/subservice", SubServiceRouter)
 Router.use("/placedstudent", PlacedStudentRouter)
 Router.use("/newsletter", NewsletterRouter)
 Router.use("/contactus", ContactUsRouter)
-
+Router.use("/application", ApplicationRouter)
+Router.use("/placementApplication", PlacementApplicationRouter)
 
 module.exports = Router

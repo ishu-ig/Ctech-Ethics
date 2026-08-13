@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const notifications = [
-  { to: "/users",    title: "New user registered",       time: "4 minutes ago"  },
-  { to: "/charts",   title: "Revenue target reached",    time: "32 minutes ago" },
-  { to: "/settings", title: "Security review completed", time: "1 hour ago"     },
+  { to: "/applications", title: "New Job Application received", time: "5 minutes ago", icon: "bi-file-earmark-person" },
+  { to: "/contactUs",    title: "New Inquiry from Contact Us",  time: "25 minutes ago", icon: "bi-envelope" },
+  { to: "/placementApplication", title: "Drive application submitted", time: "1 hour ago", icon: "bi-mortarboard" },
 ];
 
 const THEME_KEY = "adminHMD.colorTheme";
@@ -22,27 +22,25 @@ function applyTheme(theme) {
 }
 
 export default function Navbar({ toggleSidebar }) {
-  const navigate = useNavigate();                        // ✅ was missing
-    const [data, setData] = useState(null);
-  
-    useEffect(() => {
-      (async () => {
-        try {
-          let response = await fetch(
-            `${process.env.REACT_APP_BACKEND_SERVER}/api/user/${localStorage.getItem("userid")}`,
-            { headers: { Authorization: localStorage.getItem("token") } }
-          );
-          response = await response.json();
-          if (response.data) setData(response.data);
-          else navigate("/login");
-        } catch {
-          navigate("/login");
-        }
-      })();
-    }, [navigate]);
- 
+  const navigate = useNavigate();
+  const [data, setData] = useState(null);
 
-  // Apply saved / preferred theme on first render
+  useEffect(() => {
+    (async () => {
+      try {
+        let response = await fetch(
+          `${process.env.REACT_APP_BACKEND_SERVER}/api/user/${localStorage.getItem("userid")}`,
+          { headers: { Authorization: localStorage.getItem("token") } }
+        );
+        response = await response.json();
+        if (response.data) setData(response.data);
+        else navigate("/login");
+      } catch {
+        navigate("/login");
+      }
+    })();
+  }, [navigate]);
+
   useEffect(() => {
     applyTheme(getPreferredTheme());
   }, []);
@@ -58,46 +56,60 @@ export default function Navbar({ toggleSidebar }) {
   }
 
   return (
-    <nav className="navbar admin-navbar navbar-expand bg-white">
+    <nav className="navbar admin-navbar sticky-top border-bottom">
       <div className="container-fluid px-3 px-lg-4">
 
-        {/* Hamburger — calls toggleSidebar from App */}
-        <button
-          className="sidebar-toggle"
-          type="button"
-          onClick={toggleSidebar}
-          aria-controls="adminSidebar"
-          aria-label="Toggle sidebar"
-        >
-          <span /><span /><span />
-        </button>
+        {/* ── Left Side: Sidebar Toggle & Search ── */}
+        <div className="d-flex align-items-center gap-3">
+          <button
+            className="sidebar-toggle"
+            type="button"
+            onClick={toggleSidebar}
+            aria-label="Toggle sidebar"
+            title="Toggle Sidebar"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
 
-        <form className="d-none d-md-flex ms-3 flex-grow-1" role="search">
-          <input
-            className="form-control search-input"
-            type="search"
-            placeholder="Search users, orders, reports"
-            aria-label="Search"
-          />
-        </form>
+          {/* Search Bar */}
+          <div className="admin-search-wrapper d-none d-md-flex align-items-center">
+            <i className="bi bi-search search-icon me-2"></i>
+            <input
+              className="form-control search-input"
+              type="search"
+              placeholder="Search sections, jobs, applications..."
+              aria-label="Search"
+            />
+            <span className="search-shortcut ms-2">⌘K</span>
+          </div>
+        </div>
 
-        <div className="navbar-actions ms-auto">
+        {/* ── Right Side Actions ── */}
+        <div className="navbar-actions d-flex align-items-center gap-2 gap-sm-3 ms-auto">
+          
+          {/* Live System Badge */}
+          <div className="admin-live-badge d-none d-xl-flex align-items-center gap-2 px-3 py-1.5 rounded-pill">
+            <span className="pulse-dot"></span>
+            <span>CTech Portal</span>
+          </div>
 
-          {/* Theme toggle — handled entirely in React, no data-theme-toggle attr needed */}
+          {/* Theme Toggle */}
           <button
             className="icon-button theme-toggle"
             type="button"
             onClick={handleThemeToggle}
             aria-label="Switch color theme"
-            title="Switch color theme"
+            title="Toggle Light / Dark Mode"
           >
             <ThemeIcon />
           </button>
 
-          {/* Notifications */}
+          {/* Notifications Dropdown */}
           <div className="dropdown">
             <button
-              className="icon-button"
+              className="icon-button position-relative"
               type="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
@@ -106,48 +118,76 @@ export default function Navbar({ toggleSidebar }) {
               <span className="notification-dot"></span>
               <i className="bi bi-bell" aria-hidden="true"></i>
             </button>
-            <div className="dropdown-menu dropdown-menu-end notification-menu">
-              <div className="dropdown-header fw-bold text-body">Notifications</div>
-              {notifications.map(({ to, title, time }) => (
-                <Link key={title} className="dropdown-item" to={to}>
-                  <span className="notification-title">{title}</span>
-                  <span className="notification-time">{time}</span>
-                </Link>
-              ))}
+            <div className="dropdown-menu dropdown-menu-end notification-menu shadow-lg p-0 rounded-4 overflow-hidden mt-2">
+              <div className="dropdown-header border-bottom py-3 px-3 d-flex align-items-center justify-content-between">
+                <span className="fw-bold fs-6 m-0">Notifications</span>
+                <span className="badge bg-primary rounded-pill">3 New</span>
+              </div>
+              <div className="notification-list py-1">
+                {notifications.map(({ to, title, time, icon }) => (
+                  <Link key={title} className="dropdown-item px-3 py-2.5 d-flex align-items-start gap-3 border-bottom-subtle" to={to}>
+                    <div className="notification-icon-box flex-shrink-0 mt-1">
+                      <i className={`bi ${icon || 'bi-info-circle'}`}></i>
+                    </div>
+                    <div>
+                      <span className="notification-title d-block fw-semibold" style={{ fontSize: '0.88rem' }}>{title}</span>
+                      <span className="notification-time text-muted" style={{ fontSize: '0.78rem' }}>{time}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <div className="p-2 text-center border-top bg-surface-soft">
+                <Link to="/contactUs" className="small fw-bold text-primary text-decoration-none">View All Activity</Link>
+              </div>
             </div>
           </div>
 
-          {/* Profile */}
+          {/* Profile Dropdown */}
           <div className="dropdown">
             <button
-              className="profile-button dropdown-toggle"
+              className="profile-button dropdown-toggle border-0 bg-transparent p-1 d-flex align-items-center gap-2"
               type="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <img
-                className="avatar-img avatar-sm"
-                src={
-                        data?.pic
-                            ? `${data.pic}`
-                            : "https://i.pravatar.cc/100"
-                    }
-                alt="Admin"
-              />
-              <span className="profile-name d-none d-sm-inline">
-                {localStorage.getItem("name") || "Admin Hasan"}
-              </span>
+              <div className="position-relative">
+                <img
+                  className="avatar-img avatar-sm rounded-circle"
+                  src={data?.pic ? `${data.pic}` : "https://i.pravatar.cc/100"}
+                  alt="Admin"
+                />
+              </div>
+              <div className="text-start d-none d-sm-block">
+                <span className="profile-name navbar-brand-title d-block fw-bold" style={{ fontSize: '0.9rem', lineHeight: '1.2' }}>
+                  {data?.name || localStorage.getItem("name") || "Admin"}
+                </span>
+                <span className="profile-role navbar-muted-text" style={{ fontSize: '0.75rem' }}>Super Admin</span>
+              </div>
             </button>
-            <ul className="dropdown-menu dropdown-menu-end">
-              <li><Link className="dropdown-item" to="/profile">Profile</Link></li>
-              <li><Link className="dropdown-item" to="/settings">Account settings</Link></li>
-              <li><hr className="dropdown-divider" /></li>
+            <ul className="dropdown-menu dropdown-menu-end shadow-lg rounded-4 p-2 mt-2" style={{ minWidth: '200px' }}>
+              <li>
+                <div className="px-3 py-2 border-bottom mb-1">
+                  <p className="fw-bold m-0" style={{ fontSize: '0.9rem' }}>{data?.name || "Admin"}</p>
+                  <p className="text-muted small m-0 text-truncate">{data?.email || "admin@ctechethics.com"}</p>
+                </div>
+              </li>
+              <li>
+                <Link className="dropdown-item rounded-3 py-2" to="/user">
+                  <i className="bi bi-person-gear me-2 text-primary"></i> Profile Settings
+                </Link>
+              </li>
+              <li>
+                <Link className="dropdown-item rounded-3 py-2" to="/applications">
+                  <i className="bi bi-file-earmark-person me-2 text-info"></i> Applications
+                </Link>
+              </li>
+              <li><hr className="dropdown-divider my-1" /></li>
               <li>
                 <button
-                  className="dropdown-item text-danger w-100 text-start border-0 bg-transparent"
+                  className="dropdown-item text-danger rounded-3 py-2 w-100 text-start border-0 bg-transparent fw-semibold"
                   onClick={logout}
                 >
-                  Sign out
+                  <i className="bi bi-box-arrow-right me-2"></i> Sign Out
                 </button>
               </li>
             </ul>
@@ -159,14 +199,12 @@ export default function Navbar({ toggleSidebar }) {
   );
 }
 
-// Reads the current theme from <html> and renders the correct icon
 function ThemeIcon() {
   const [theme, setTheme] = React.useState(
     () => document.documentElement.getAttribute("data-theme") || "light"
   );
 
   useEffect(() => {
-    // Watch for external changes (e.g. main.js or system preference)
     const observer = new MutationObserver(() => {
       setTheme(document.documentElement.getAttribute("data-theme") || "light");
     });
@@ -176,8 +214,9 @@ function ThemeIcon() {
 
   return (
     <i
-      className={theme === "dark" ? "bi bi-sun" : "bi bi-moon-stars"}
+      className={theme === "dark" ? "bi bi-sun-fill text-warning" : "bi bi-moon-stars-fill text-primary"}
       aria-hidden="true"
+      style={{ fontSize: '1.1rem' }}
     />
   );
 }

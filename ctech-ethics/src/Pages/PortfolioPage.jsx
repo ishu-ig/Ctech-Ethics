@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Component Imports (Adjust paths based on your folder structure)
+// Component Imports
 import HeroSection from '../Components/HeroSection';
 import ConsultancyModal from '../Components/ConsultancyModal';
 import PortfolioCard from '../Components/PortfolioCard';
@@ -152,9 +152,6 @@ export default function PortfolioPage() {
                                 <i className="bi bi-chevron-down ms-1"></i>
                             </button>
                         </div>
-
-                        {/* Filter Tabs (Horizontal Pill Bar) */}
-                        
                     </div>
 
                     {/* CATEGORY POPUP MODAL */}
@@ -184,7 +181,7 @@ export default function PortfolioPage() {
                                             <i className="bi bi-folder-fill me-1"></i> Portfolio Categories
                                         </span>
                                         <h3 className="cjd-modal-title">Select Category</h3>
-                                        <p className="cjd-modal-sub text-muted">
+                                        <p className="cjd-modal-sub">
                                             Explore case studies by domain ({CATEGORIES.length} categories available)
                                         </p>
                                     </div>
@@ -251,7 +248,7 @@ export default function PortfolioPage() {
                         {/* Fallback if no projects match */}
                         {filteredProjects.length === 0 && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-12 text-center py-5">
-                                <h4 style={{ color: 'rgba(255,255,255,0.5)' }}>No projects found in this category.</h4>
+                                <h4 className="portfolio-empty-text">No projects found in this category.</h4>
                             </motion.div>
                         )}
                     </motion.div>
@@ -261,21 +258,16 @@ export default function PortfolioPage() {
             {/* 3. CTA SECTION */}
             <section className="container py-5 mb-4">
                 <motion.div
-                    className="p-5 text-center position-relative"
-                    style={{
-                        background: 'linear-gradient(135deg, rgba(110,168,255,0.1), rgba(79,209,197,0.05))',
-                        border: '1px solid rgba(110,168,255,0.2)',
-                        borderRadius: '24px'
-                    }}
+                    className="portfolio-cta-card p-5 text-center position-relative"
                     initial={{ opacity: 0, y: 24 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: '-60px' }}
                     transition={{ duration: 0.55 }}
                 >
-                    <h2 style={{ fontFamily: FONT_HEAD, fontWeight: 700, fontSize: 'clamp(1.8rem, 3.2vw, 2.2rem)', marginBottom: 12, color: 'var(--heading-color)' }}>
+                    <h2 className="portfolio-cta-title" style={{ fontFamily: FONT_HEAD, fontWeight: 700, fontSize: 'clamp(1.8rem, 3.2vw, 2.2rem)', marginBottom: 12 }}>
                         Ready to start your next project?
                     </h2>
-                    <p style={{ color: 'var(--text-muted, rgba(220,230,250,0.65))', fontSize: '1rem', maxWidth: 540, margin: '0 auto 28px' }}>
+                    <p className="portfolio-cta-sub mb-4" style={{ fontSize: '1rem', maxWidth: 540, margin: '0 auto 28px' }}>
                         Let’s transform your ideas into reality. Schedule a free consultation with our tech advisors to discuss your vision.
                     </p>
                     <div className="d-flex gap-3 justify-content-center flex-wrap">
@@ -291,8 +283,8 @@ export default function PortfolioPage() {
                         </motion.button>
                         <Link
                             to="/contactus"
-                            className="btn btn-outline-light rounded-pill px-4 py-2"
-                            style={{ fontSize: '0.95rem', borderColor: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}
+                            className="btn portfolio-cta-contact-btn rounded-pill px-4 py-2"
+                            style={{ fontSize: '0.95rem', textDecoration: 'none' }}
                             onClick={() => window.scrollTo(0, 0)}
                         >
                             Contact Us

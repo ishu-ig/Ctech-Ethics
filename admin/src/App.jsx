@@ -67,6 +67,10 @@ import AdminUpdateSubService from "./pages/service/subService/AdminUpdateSubServ
 import AdminPlacedStudent from "./pages/placedStudent/AdminPlacedStudent";
 import AdminCreatePlacedStudent from "./pages/placedStudent/AdminCreatePlacedStudent";
 import AdminUpdatePlacedStudent from "./pages/placedStudent/AdminUpdatePlacedStudent";
+import AdminApplications from "./pages/application/AdminApplication";
+import AdminShowApplication from "./pages/application/AdminShowApplication";
+import AdminPlacementApplications from "./pages/placementApplication/AdminPlacementApplication";
+import AdminShowPlacementApplication from "./pages/placementApplication/AdminShowPlacementApplication";
 
 // FIX: All public routes listed here must match route paths exactly
 const publicRoutes = ["/login", "/register", "/forgot-password"];
@@ -242,6 +246,12 @@ function Shell() {
           {/* CONTACT */}
           <Route path="/contactus" element={<AdminContactUs />} />
           <Route path="/contactus/view/:_id" element={<AdminShowQuery />} />
+
+          <Route path="/application" element={<AdminApplications />} />
+          <Route path="/application/view/:_id" element={<AdminShowApplication />} />
+
+          <Route path="/placementApplication" element={<AdminPlacementApplications />} />
+          <Route path="/placementApplication/view/:_id" element={<AdminShowPlacementApplication />} />
 
 
 

@@ -680,11 +680,11 @@ export default function PlacementJobsPage() {
         size="md"
       />
 
-      <Stats />
       <JobListings />
       <ProcessTimeline />
       <WhyApply />
       <CareerTips />
+      <Stats />
 
       <section className="section final-cta">
         <Reveal className="glass-panel final-cta-panel">
@@ -1039,58 +1039,120 @@ const CSS = `
 
 /* ---------- apply modal (cjd-*) ---------- */
 .cjd-modal-overlay {
-  position: fixed; inset: 0; background: rgba(10,14,28,0.7); backdrop-filter: blur(6px);
-  display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px;
-  animation: cjdFadeIn .25s ease;
+  position: fixed; inset: 0; background: rgba(6, 10, 22, 0.82); backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%); display: flex; align-items: center; justify-content: center;
+  z-index: 10000; padding: 20px; animation: cjdFadeIn .28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @keyframes cjdFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
 .cjd-modal-card {
-  background: var(--surface-solid); border-radius: 22px; padding: 34px; width: 100%; max-width: 540px;
-  max-height: 88vh; overflow-y: auto; position: relative; box-shadow: var(--shadow-lg); border: 1px solid var(--border);
-  animation: cjdModalPop .35s cubic-bezier(.2,.9,.25,1.1);
+  position: relative; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  background: linear-gradient(155deg, rgba(13, 20, 38, 0.97) 0%, rgba(22, 14, 40, 0.98) 100%);
+  border: 1px solid rgba(110, 168, 255, 0.25); border-radius: 24px; padding: 34px 28px 30px;
+  box-shadow: 0 30px 90px -10px rgba(0, 0, 0, 0.8), 0 0 50px -10px rgba(110, 168, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+  animation: cjdModalPop .35s cubic-bezier(0.16, 1, 0.3, 1);
+  scrollbar-width: thin; scrollbar-color: rgba(110, 168, 255, 0.3) transparent;
 }
-@keyframes cjdModalPop { from { opacity: 0; transform: translateY(18px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-.cjd-modal-accent { position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 22px 22px 0 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
-.cjd-modal-close { position: absolute; top: 20px; right: 20px; background: var(--bg-alt); border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: background .2s, color .2s; z-index: 1; }
-.cjd-modal-close:hover { background: var(--accent-soft); color: var(--accent); }
-.cjd-modal-header { margin-bottom: 22px; padding-right: 30px; }
-.cjd-modal-eyebrow {
-  display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 500;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+@keyframes cjdModalPop { from { opacity: 0; transform: translateY(22px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+.cjd-modal-accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 24px 24px 0 0;
+  background: linear-gradient(90deg, #6ea8ff, #a78bfa, #4fd1c5, #6ea8ff); background-size: 300% 100%;
+  animation: cjdShimmer 6s linear infinite;
 }
-.cjd-modal-title { font-size: 1.35rem; margin-bottom: 6px; }
-.cjd-modal-sub { font-size: 0.9rem; }
+@keyframes cjdShimmer { 0% { background-position: 0% 0%; } 100% { background-position: 300% 0%; } }
+
+.cjd-modal-close {
+  position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.8);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .25s ease; z-index: 10;
+}
+.cjd-modal-close:hover {
+  background: rgba(168, 85, 247, 0.22); color: #ffffff; border-color: rgba(168, 85, 247, 0.45);
+  transform: rotate(90deg) scale(1.08);
+}
+
+.cjd-modal-header { margin-bottom: 24px; padding-right: 32px; }
+.cjd-modal-badge {
+  display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+  font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent);
+  background: var(--accent-soft); border: 1px solid rgba(110, 168, 255, 0.28); padding: 4px 12px; border-radius: 999px; margin-bottom: 12px;
+}
+.cjd-modal-title { font-family: 'Sora', 'Inter', sans-serif; font-size: 1.38rem; font-weight: 700; color: var(--ink); margin: 0 0 6px; line-height: 1.3; }
+.cjd-modal-sub { font-size: 0.88rem; color: var(--muted); margin: 0; line-height: 1.5; }
+
 .cjd-form { display: flex; flex-direction: column; gap: 16px; }
-.cjd-field { display: flex; flex-direction: column; gap: 6px; }
-.cjd-field label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
-.cjd-field label em { font-weight: 400; font-style: normal; opacity: 0.7; }
-.cjd-field input, .cjd-field textarea, .cjd-field select {
-  border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.92rem; color: var(--ink);
-  outline: none; background: var(--bg-alt); transition: border-color .2s; resize: vertical;
-}
-.cjd-field input:focus, .cjd-field textarea:focus, .cjd-field select:focus { border-color: var(--accent); }
-.cjd-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cjd-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 @media (max-width: 480px) { .cjd-field-row { grid-template-columns: 1fr; } }
-.cjd-file-drop {
-  display: flex; align-items: center; gap: 10px; border: 1.5px dashed var(--border); border-radius: var(--radius-sm);
-  padding: 16px; position: relative; font-size: 0.85rem; color: var(--muted); font-weight: 400; transition: border-color .2s; cursor: pointer;
+
+.cjd-field { display: flex; flex-direction: column; gap: 6px; }
+.cjd-field label { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+.cjd-field label em { font-weight: 400; font-style: normal; opacity: 0.6; }
+.cjd-field input, .cjd-field textarea, .cjd-field select {
+  width: 100%; font-size: 0.92rem; padding: 12px 15px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--bg-alt); color: var(--ink); outline: none; font-family: inherit;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1); resize: vertical;
 }
-.cjd-file-drop:hover { border-color: var(--accent); }
+.cjd-field input::placeholder, .cjd-field textarea::placeholder { color: rgba(220, 230, 250, 0.35); }
+.cjd-field input:focus, .cjd-field textarea:focus, .cjd-field select:focus {
+  border-color: var(--accent); background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 3.5px rgba(110, 168, 255, 0.18), 0 4px 16px rgba(0, 0, 0, 0.2); transform: translateY(-1px);
+}
+
+.cjd-file-drop {
+  display: block; border: 1.5px dashed var(--border); border-radius: 14px; padding: 16px;
+  background: var(--accent-soft); cursor: pointer; transition: all 0.25s ease;
+}
+.cjd-file-drop:hover { border-color: var(--accent); background: rgba(110, 168, 255, 0.15); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(110, 168, 255, 0.12); }
+.cjd-file-drop.has-file { border-style: solid; border-color: rgba(79, 209, 197, 0.45); background: rgba(79, 209, 197, 0.08); }
+
+.cjd-file-placeholder { display: flex; align-items: center; gap: 14px; }
+.cjd-upload-icon-box {
+  width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); color: var(--accent);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cjd-upload-main { display: block; font-size: 0.88rem; font-weight: 600; color: var(--ink); }
+.cjd-upload-sub { display: block; font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+
+.cjd-file-selected { display: flex; align-items: center; gap: 12px; }
+.cjd-file-icon {
+  width: 36px; height: 36px; border-radius: 50%; background: rgba(79, 209, 197, 0.18); color: var(--accent-2);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cjd-file-info { flex: 1; overflow: hidden; }
+.cjd-file-name { display: block; font-size: 0.88rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cjd-file-sub { display: block; font-size: 0.75rem; color: var(--accent-2); }
+.cjd-file-remove {
+  background: rgba(255, 255, 255, 0.08); border: none; width: 28px; height: 28px; border-radius: 50%;
+  color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .2s ease;
+}
+.cjd-file-remove:hover { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+
 .cjd-submit-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
-  padding: 13px 24px; border-radius: 999px; font-weight: 600; font-size: 0.92rem; border: none; margin-top: 4px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #040810;
-  box-shadow: 0 10px 24px -8px rgba(79,209,197,0.55); transition: transform .25s ease, box-shadow .25s ease;
+  padding: 14px 24px; border-radius: 999px; font-family: 'Sora', 'Inter', sans-serif; font-weight: 700;
+  font-size: 0.95rem; border: none; margin-top: 6px; background: linear-gradient(135deg, var(--accent) 0%, #a78bfa 50%, var(--accent-2) 100%);
+  color: #040810; box-shadow: 0 10px 28px -6px rgba(110, 168, 255, 0.55); cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.cjd-submit-btn:hover { box-shadow: 0 14px 30px -8px rgba(79,209,197,0.65); transform: translateY(-2px); }
-.cjd-submit-btn:active { transform: scale(0.97); }
-.cjd-success { text-align: center; padding: 24px 10px; }
+.cjd-submit-btn:hover:not(:disabled) { box-shadow: 0 14px 36px -6px rgba(110, 168, 255, 0.7); transform: translateY(-2px); filter: brightness(1.08); }
+.cjd-submit-btn:active:not(:disabled) { transform: scale(0.98); }
+.cjd-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.cjd-spinner { animation: cjdSpin 1s linear infinite; }
+@keyframes cjdSpin { 100% { transform: rotate(360deg); } }
+
+.cjd-success { text-align: center; padding: 30px 14px 10px; }
 .cjd-success-icon {
-  width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  background: var(--accent-soft); color: var(--accent-2); margin: 0 auto 16px;
+  width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center;
+  justify-content: center; color: var(--accent-2); background: rgba(79, 209, 197, 0.12);
+  border: 1px solid rgba(79, 209, 197, 0.3); box-shadow: 0 0 30px rgba(79, 209, 197, 0.25);
+  animation: cjdPulseGlow 2s infinite alternate;
 }
-.cjd-success h3 { font-size: 1.4rem; margin-bottom: 10px; }
-.cjd-success p { font-size: 0.95rem; margin-bottom: 24px; }
+@keyframes cjdPulseGlow { 0% { box-shadow: 0 0 20px rgba(79, 209, 197, 0.2); } 100% { box-shadow: 0 0 40px rgba(79, 209, 197, 0.45); } }
+.cjd-success h3 { font-family: 'Sora', sans-serif; font-size: 1.45rem; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+.cjd-success p { font-size: 0.92rem; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
 
 /* ---------- recruitment process redesign & animations ---------- */
 .process-flow {

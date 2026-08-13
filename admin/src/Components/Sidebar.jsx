@@ -1,54 +1,81 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 
-const navLinks = [
-  { to: "/", icon: "bi-speedometer2", label: "Dashboard" },
-  { to: "/banner", icon: "bi-file-earmark-text", label: "Banner" },
+const navSections = [
   {
-    to: "/about",
-    icon: "bi-person-lines-fill",
-    label: "About Me",
-    subLinks: [
-      { to: "/about", label: "Personal Info" },
-      { to: "/whyChooseUs", label: "Why Choose Us" },
-    ]
-  },
-  { to: "/team", icon: "bi-stars", label: "Our Team" },
-  { to: "/techStack", icon: "bi-stars", label: "Technology Stack" },
-  { to: "/achievement", icon: "bi-trophy", label: "Achievements" },
-  { to: "/portfolio", icon: "bi-collection", label: "Portfolio" },
-  {
-    to: "/service",
-    icon: "bi-gear",
-    label: "Services",
-    subLinks: [
-      { to: "/service", label: "Services" },
-      { to: "/subService", label: "Sub Services" }
-    ]
+    title: "MAIN",
+    links: [
+      { to: "/", icon: "bi-speedometer2", label: "Dashboard" },
+      { to: "/banner", icon: "bi-layout-three-columns", label: "Hero Banners" },
+    ],
   },
   {
-    to: "/job",
-    icon: "bi-suitcase-lg",
-    label: "Jobs",
-    subLinks: [
-      { to: "companyjob", label: "Company Job" },
-      { to: "/placement", label: "Placement Jobs" }
-    ]
+    title: "COMPANY & CONTENT",
+    links: [
+      {
+        to: "/about",
+        icon: "bi-building",
+        label: "About & Story",
+        subLinks: [
+          { to: "/about", label: "Personal & Company Info" },
+          { to: "/whyChooseUs", label: "Why Choose Us" },
+        ],
+      },
+      { to: "/team", icon: "bi-people-fill", label: "Our Team" },
+      { to: "/techStack", icon: "bi-cpu-fill", label: "Tech Stack" },
+      { to: "/achievement", icon: "bi-trophy-fill", label: "Achievements" },
+      { to: "/portfolio", icon: "bi-grid-3x3-gap-fill", label: "Portfolio" },
+      {
+        to: "/service",
+        icon: "bi-gear-wide-connected",
+        label: "Services",
+        subLinks: [
+          { to: "/service", label: "Main Services" },
+          { to: "/subService", label: "Sub Services" },
+        ],
+      },
+      { to: "/blog", icon: "bi-journal-richtext", label: "Blogs & News" },
+      { to: "/testimonial", icon: "bi-chat-quote-fill", label: "Testimonials" },
+    ],
   },
-  { to: "/placedstudent", icon: "bi-envelope-paper", label: "Placed Student" },
-  { to: "/blog", icon: "bi-file-earmark-text", label: "Blogs" },
-  { to: "/testimonial", icon: "bi-chat-quote", label: "Testimonial" },
-  { to: "/newsletter", icon: "bi-envelope-paper", label: "Newsletter" },
-  { to: "/user", icon: "bi-people", label: "Users" },
-  { to: "/contactUs", icon: "bi-headset", label: "Queries" },
+  {
+    title: "CAREERS & PLACEMENT",
+    links: [
+      {
+        to: "/job",
+        icon: "bi-briefcase-fill",
+        label: "Jobs Management",
+        subLinks: [
+          { to: "/companyjob", label: "Company Jobs" },
+          { to: "/placement", label: "Placement Drives" },
+        ],
+      },
+      { to: "/placedstudent", icon: "bi-mortarboard-fill", label: "Placed Students" },
+      {
+        to: "/applications",
+        icon: "bi-file-earmark-person-fill",
+        label: "Applications",
+        subLinks: [
+          { to: "/application", label: "Job Applications" },
+          { to: "/placementApplication", label: "Placement Applications" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "SYSTEM & USERS",
+    links: [
+      { to: "/user", icon: "bi-person-badge-fill", label: "User Access" },
+      { to: "/newsletter", icon: "bi-envelope-paper-fill", label: "Newsletter" },
+      { to: "/contactUs", icon: "bi-chat-dots-fill", label: "Inquiries & Messages" },
+    ],
+  },
 ];
 
 export default function Sidebar({ onLinkClick }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [data, setData] = useState(null);
-
-  // Tracks which parent menus are expanded
   const [expandedMenus, setExpandedMenus] = useState({});
 
   useEffect(() => {
@@ -67,26 +94,21 @@ export default function Sidebar({ onLinkClick }) {
     })();
   }, [navigate]);
 
-  // Auto-expand a parent menu when landing directly on one of its sub-routes
-  // (e.g. refreshing the page on /about/team should show the group open).
+  // Auto-expand parent when landing directly on a sub-route
   useEffect(() => {
-    const parentWithActiveChild = navLinks.find(
-      (link) =>
-        link.subLinks?.some((sub) => location.pathname.startsWith(sub.to))
-    );
-    if (parentWithActiveChild) {
-      setExpandedMenus((prev) => ({ ...prev, [parentWithActiveChild.label]: true }));
-    }
+    navSections.forEach((section) => {
+      section.links.forEach((link) => {
+        if (link.subLinks?.some((sub) => location.pathname.startsWith(sub.to))) {
+          setExpandedMenus((prev) => ({ ...prev, [link.label]: true }));
+        }
+      });
+    });
   }, [location.pathname]);
 
   const name = data?.name || localStorage.getItem("name") || "Admin";
 
-  // Toggles a dropdown open/closed — flips whatever the current state is
   const toggleMenu = (label) => {
-    setExpandedMenus((prev) => ({
-      ...prev,
-      [label]: !prev[label],
-    }));
+    setExpandedMenus((prev) => ({ ...prev, [label]: !prev[label] }));
   };
 
   const isParentActive = (link) =>
@@ -94,107 +116,144 @@ export default function Sidebar({ onLinkClick }) {
 
   return (
     <aside className="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
+
+      {/* ── Brand Header ── */}
       <div className="sidebar-header">
-        <NavLink className="brand-mark" to="/" aria-label="Dashboard">
-          <span className="brand-icon">
-            <i className="bi bi-grid-1x2-fill" aria-hidden="true"></i>
-          </span>
-          <span className="brand-copy">
-            <span className="brand-title">adminHMD</span>
-            <span className="brand-subtitle">Admin Template</span>
-          </span>
+        {/* Gradient accent bar at top */}
+        <div className="sidebar-header-accent" aria-hidden="true" />
+
+        <NavLink className="sidebar-brand-link text-decoration-none mb-5" to="/" aria-label="Go to Dashboard">
+          {/* Logo Badge */}
+          <div className="sidebar-brand-badge">
+            <i className="bi bi-shield-lock-fill"></i>
+          </div>
+
+          {/* Company Info */}
+          <div className="sidebar-brand-info">
+            <span className="sidebar-brand-name">CTech Ethic</span>
+            <span className="sidebar-brand-tagline">Solution Admin</span>
+          </div>
+
+          {/* Version pill */}
+          <span className="sidebar-brand-version">v2.4</span>
         </NavLink>
+
+        {/* Company Sub-info Row */}
+        <div className="sidebar-company-row">
+          <span className="sidebar-company-dot"></span>
+          <span className="sidebar-company-status">Portal Active</span>
+          <span className="sidebar-company-sep">·</span>
+          <span className="sidebar-company-domain">ctechethic.com</span>
+        </div>
       </div>
 
-      <nav className="sidebar-nav">
-        {navLinks.map((link) => {
-          const { to, icon, label, subLinks } = link;
-          const isOpen = !!expandedMenus[label];
+      {/* ── Navigation Sections ── */}
+      <nav className="sidebar-nav flex-grow-1 overflow-y-auto py-2">
+        {navSections.map((section) => (
+          <div key={section.title} className="sidebar-section mb-1">
+            <div className="sidebar-section-title px-3 py-1">{section.title}</div>
 
-          // ── Parent item WITH sub-links: acts purely as an accordion toggle ──
-          if (subLinks) {
-            return (
-              <div key={label} className="nav-item-wrapper">
-                <button
-                  type="button"
-                  className={`nav-link nav-link-toggle${isParentActive(link) ? " active" : ""}`}
-                  aria-expanded={isOpen}
-                  onClick={() => toggleMenu(label)}
-                >
-                  <span className="nav-icon">
-                    <i className={`bi ${icon}`} aria-hidden="true"></i>
-                  </span>
-                  <span className="nav-text">{label}</span>
-                  <span className="nav-chevron ms-auto" style={{ marginLeft: "auto" }}>
-                    <i className={`bi bi-chevron-${isOpen ? "up" : "down"}`}></i>
-                  </span>
-                </button>
+            <div className="d-grid">
+              {section.links.map((link) => {
+                const { to, icon, label, subLinks } = link;
+                const isOpen = !!expandedMenus[label];
+                const parentActive = isParentActive(link);
 
-                <div
-                  className={`nav-sublinks${isOpen ? " open" : ""}`}
-                  style={{
-                    paddingLeft: "2.5rem",
-                    maxHeight: isOpen ? "500px" : "0px",
-                    overflow: "hidden",
-                    transition: "max-height 0.25s ease",
-                  }}
-                >
-                  {subLinks.map((sub) => (
-                    <NavLink
-                      key={sub.to}
-                      to={sub.to}
-                      className={({ isActive }) => `nav-link nav-sub-link${isActive ? " active" : ""}`}
-                      style={{ fontSize: "0.9em", padding: "0.5rem 1rem" }}
-                      onClick={() => {
-                        if (!window.matchMedia("(min-width: 992px)").matches) {
-                          onLinkClick?.();
-                        }
-                      }}
-                    >
-                      <span className="nav-text">{sub.label}</span>
-                    </NavLink>
-                  ))}
-                </div>
-              </div>
-            );
-          }
+                if (subLinks) {
+                  return (
+                    <div key={label} className="nav-item-wrapper">
+                      <button
+                        type="button"
+                        className={`nav-link w-100 border-0 text-start bg-transparent d-flex align-items-center${parentActive ? " active" : ""}`}
+                        aria-expanded={isOpen}
+                        onClick={() => toggleMenu(label)}
+                      >
+                        <span className="nav-icon flex-shrink-0">
+                          <i className={`bi ${icon}`} aria-hidden="true"></i>
+                        </span>
+                        <span className="nav-text ms-2">{label}</span>
+                        <span className="nav-chevron ms-auto">
+                          <i className={`bi bi-chevron-${isOpen ? "up" : "down"}`}></i>
+                        </span>
+                      </button>
 
-          // ── Regular item WITHOUT sub-links: normal navigable link ──
-          return (
-            <NavLink
-              key={label}
-              to={to}
-              end={to === "/"}
-              className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}
-              onClick={() => {
-                if (!window.matchMedia("(min-width: 992px)").matches) {
-                  onLinkClick?.();
+                      <div
+                        style={{
+                          maxHeight: isOpen ? "400px" : "0",
+                          overflow: "hidden",
+                          transition: "max-height 0.28s cubic-bezier(0.4,0,0.2,1)",
+                        }}
+                      >
+                        <div className="sublink-container d-grid gap-1 mt-1 mb-1">
+                          {subLinks.map((sub) => (
+                            <NavLink
+                              key={sub.to}
+                              to={sub.to}
+                              className={({ isActive }) => `nav-sub-link${isActive ? " active" : ""}`}
+                              onClick={() => {
+                                if (!window.matchMedia("(min-width: 992px)").matches) {
+                                  onLinkClick?.();
+                                }
+                              }}
+                            >
+                              <span className="sublink-dot"></span>
+                              <span className="nav-text">{sub.label}</span>
+                            </NavLink>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
                 }
-              }}
-            >
-              <span className="nav-icon">
-                <i className={`bi ${icon}`} aria-hidden="true"></i>
-              </span>
-              <span className="nav-text">{label}</span>
-            </NavLink>
-          );
-        })}
+
+                return (
+                  <NavLink
+                    key={label}
+                    to={to}
+                    end={to === "/"}
+                    className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}
+                    onClick={() => {
+                      if (!window.matchMedia("(min-width: 992px)").matches) {
+                        onLinkClick?.();
+                      }
+                    }}
+                  >
+                    <span className="nav-icon flex-shrink-0">
+                      <i className={`bi ${icon}`} aria-hidden="true"></i>
+                    </span>
+                    <span className="nav-text ms-2">{label}</span>
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
-      <div className="sidebar-user">
-        <img
-          className="avatar-img avatar-md sidebar-user-avatar"
-          src={data?.pic ? `${data.pic}` : "https://i.pravatar.cc/100"}
-          alt={name}
-        />
-        <strong>{name}</strong>
-        <small>Active Workspace</small>
+      {/* ── User Profile Card ── */}
+      {/* <div className="sidebar-user-card mx-3 mb-3 p-3 rounded-4">
+        <div className="d-flex align-items-center gap-3">
+          <div className="position-relative flex-shrink-0">
+            <img
+              className="sidebar-user-avatar rounded-circle"
+              src={data?.pic ? `${data.pic}` : "https://i.pravatar.cc/100"}
+              alt={name}
+            />
+            <span className="sidebar-status-online"></span>
+          </div>
+          <div className="overflow-hidden flex-grow-1">
+            <h6 className="sidebar-user-name text-truncate m-0">{name}</h6>
+            <span className="sidebar-user-role">Administrator</span>
+          </div>
+        </div>
+      </div> */}
+
+      {/* ── Footer Status ── */}
+      <div className="sidebar-footer px-3 py-2 d-flex align-items-center gap-2">
+        <span className="status-dot"></span>
+        <span className="sidebar-footer-text">System • Operational</span>
       </div>
 
-      <div className="sidebar-footer">
-        <span className="status-dot"></span>
-        <span className="sidebar-footer-text">System running smoothly</span>
-      </div>
     </aside>
   );
 }

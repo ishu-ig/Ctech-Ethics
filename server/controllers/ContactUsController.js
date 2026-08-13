@@ -33,7 +33,8 @@ async function createRecord(req, res) {
                 </div>
             `,
         }, (error) => {
-            if (error) console.log(error);
+            if (error) console.log("SEND FAILED:", error);
+            else console.log("SEND OK:", info.messageId, info.response);
         })
 
         res.send({

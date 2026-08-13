@@ -274,7 +274,7 @@ export default function AdminUser() {
                                         <th scope="col">User</th>
                                         <th scope="col">Username</th>
                                         <th scope="col">Phone</th>
-                                        <th scope="col">Company</th>
+                                        {/* <th scope="col">Company</th> */}
                                         <th scope="col">Role</th>
                                         <th scope="col">Status</th>
                                         <th scope="col" className="text-end">Actions</th>
@@ -313,18 +313,18 @@ export default function AdminUser() {
                                                     {item.phone || <span className="text-muted opacity-50">—</span>}
                                                 </td>
 
-                                                <td className="text-muted" style={{ fontSize: '0.83rem' }}>
+                                                {/* <td className="text-muted" style={{ fontSize: '0.83rem' }}>
                                                     {item.company && item.company !== 'true'
                                                         ? item.company
                                                         : <span className="text-muted opacity-50">—</span>
                                                     }
-                                                </td>
+                                                </td> */}
 
                                                 <td>
                                                     <span className={`badge ${item.role === "Super Admin" ? "text-bg-danger"
-                                                            : item.role === "Admin" ? "text-bg-primary"
-                                                                : item.role === "Recruiter" ? "text-bg-success"
-                                                                    : "text-bg-warning"
+                                                        : item.role === "Admin" ? "text-bg-primary"
+                                                            : item.role === "Recruiter" ? "text-bg-success"
+                                                                : "text-bg-warning"
                                                         }`}>
                                                         {item.role}
                                                     </span>

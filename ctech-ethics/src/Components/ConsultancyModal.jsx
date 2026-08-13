@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
 import { getService } from '../Redux/ActionCreators/ServiceActionCreators';
+import SimpleReactValidator from 'simple-react-validator';
+import { useEffect } from 'react';
 
 const FALLBACK_SERVICES = [
   'Software Development',
@@ -19,19 +21,41 @@ const BUDGET_RANGES = [
   '$50,000+'
 ];
 
-export default function ConsultancyModal({ isOpen, onClose }) {
+export default function ConsultancyModal({ isOpen, onClose, defaultService: preService = '' }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    service: '',
+    service: preService,
     budget: '',
     description: ''
   });
 
-  const [touched, setTouched] = useState({});
+  // Sync pre-selected service whenever the prop or open state changes
+  useEffect(() => {
+    if (isOpen) {
+      setFormData((prev) => ({ ...prev, service: preService || prev.service }));
+    }
+  }, [isOpen, preService]);
+
+  const [, forceUpdate] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // SimpleReactValidator — one instance per component mount
+  const validator = useRef(
+    new SimpleReactValidator({
+      autoForceUpdate: { forceUpdate: () => forceUpdate((n) => n + 1) },
+      className: 'field-error',
+      messages: {
+        required:    'This field is required.',
+        email:       'Enter a valid email address.',
+        phone:       'Enter a valid phone number.',
+        min:         'Must be at least :min characters.',
+        alpha_space: 'Only letters and spaces are allowed.',
+      },
+    })
+  );
 
   // ── Redux: live service list ──
   const dispatch = useDispatch();
@@ -52,12 +76,13 @@ export default function ConsultancyModal({ isOpen, onClose }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleBlur = (field) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validator.current.allValid()) {
+      validator.current.showMessages();
+      forceUpdate((n) => n + 1);
+      return;
+    }
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
@@ -67,15 +92,9 @@ export default function ConsultancyModal({ isOpen, onClose }) {
 
   const handleReset = () => {
     setIsSubmitted(false);
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      service: '',
-      budget: '',
-      description: ''
-    });
-    setTouched({});
+    setFormData({ name: '', email: '', phone: '', service: preService || '', budget: '', description: '' });
+    validator.current.hideMessages();
+    forceUpdate((n) => n + 1);
     onClose();
   };
 
@@ -153,6 +172,7 @@ export default function ConsultancyModal({ isOpen, onClose }) {
                   key="form-view"
                   onSubmit={handleSubmit}
                   className="consultancy-form-body"
+                  noValidate
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
@@ -181,12 +201,9 @@ export default function ConsultancyModal({ isOpen, onClose }) {
                           placeholder="Full Name *"
                           value={formData.name}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('name')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('name')}
                         />
-                        {touched.name && !formData.name && (
-                          <span className="field-error">Full Name is required</span>
-                        )}
+                        {validator.current.message('name', formData.name, 'required|alpha_space|min:2')}
                       </div>
                     </div>
 
@@ -201,12 +218,9 @@ export default function ConsultancyModal({ isOpen, onClose }) {
                           placeholder="Email Address *"
                           value={formData.email}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('email')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('email')}
                         />
-                        {touched.email && !formData.email && (
-                          <span className="field-error">Valid Email is required</span>
-                        )}
+                        {validator.current.message('email', formData.email, 'required|email')}
                       </div>
                     </div>
 
@@ -221,12 +235,9 @@ export default function ConsultancyModal({ isOpen, onClose }) {
                           placeholder="Phone Number *"
                           value={formData.phone}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('phone')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('phone')}
                         />
-                        {touched.phone && !formData.phone && (
-                          <span className="field-error">Phone Number is required</span>
-                        )}
+                        {validator.current.message('phone', formData.phone, 'required|phone')}
                       </div>
                     </div>
 
@@ -239,17 +250,14 @@ export default function ConsultancyModal({ isOpen, onClose }) {
                           className="consultancy-select"
                           value={formData.service}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('service')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('service')}
                         >
                           <option value="" disabled>Select Service Required *</option>
                           {serviceOptions.map((s, idx) => (
                             <option key={idx} value={s}>{s}</option>
                           ))}
                         </select>
-                        {touched.service && !formData.service && (
-                          <span className="field-error">Please select a service</span>
-                        )}
+                        {validator.current.message('service', formData.service, 'required')}
                       </div>
                     </div>
 
@@ -262,17 +270,14 @@ export default function ConsultancyModal({ isOpen, onClose }) {
                           className="consultancy-select"
                           value={formData.budget}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('budget')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('budget')}
                         >
                           <option value="" disabled>Select Project Budget *</option>
                           {BUDGET_RANGES.map((b) => (
                             <option key={b} value={b}>{b}</option>
                           ))}
                         </select>
-                        {touched.budget && !formData.budget && (
-                          <span className="field-error">Please select a budget range</span>
-                        )}
+                        {validator.current.message('budget', formData.budget, 'required')}
                       </div>
                     </div>
 
@@ -287,16 +292,13 @@ export default function ConsultancyModal({ isOpen, onClose }) {
                           placeholder="Brief Project Description *"
                           value={formData.description}
                           onChange={handleChange}
-                          onBlur={() => handleBlur('description')}
-                          required
+                          onBlur={() => validator.current.showMessageFor('description')}
                         />
-                        {touched.description && !formData.description && (
-                          <span className="field-error">Project description is required</span>
-                        )}
+                        {validator.current.message('description', formData.description, 'required|min:10')}
                       </div>
                     </div>
 
-                    {/* Buttons: Submit Request & Close */}
+                    {/* Buttons */}
                     <div className="col-12 mt-4 d-flex align-items-center justify-content-end gap-3">
                       <motion.button
                         type="button"

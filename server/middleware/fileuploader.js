@@ -41,5 +41,7 @@ module.exports = {
     placementUpload: createUploader("placement"),
     aboutUpload: createUploader('about'),
     serviceUploader: createUploader("service"),
-    placedStudentUploader : createUploader("placedStudent")
+    placedStudentUploader: createUploader("placedStudent"),
+    applicationUploader: createUploader("application"),
+    placementApplicationUploader: createUploader("placementApplication")
 };

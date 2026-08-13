@@ -6,7 +6,6 @@ import PortfolioReducer from "./PortfolioReducer"
 import ContactUsReducer from "./ContactUsReducer"
 import TestimonialReducer from "./TestimonialReducer"
 import BlogReducer from "./BlogReducer"
-import ResumeReducer from "./ResumeReducer"
 import NewsletterReducer from "./NewsletterReducer"
 import CommentReducer from "./CommentReducer"
 import AchievementReducer from "./AchievementReducer"
@@ -19,6 +18,8 @@ import PlacementReducer from "./PlacementReducer"
 import CareerReducer from "./CareerReducer"
 import SubServiceReducer from "./SubServiceReducer"
 import PlacedStudentReducer from "./PlacedStudentReducer"
+import ApplicationReducer from "./ApplicationReducer"
+import PlacementApplicationReducer from "./PlacementApplicationReducer"
 
 
 
@@ -31,7 +32,6 @@ export default combineReducers({
     ContactUsStateData: ContactUsReducer,
     PortfolioStateData: PortfolioReducer,
     BlogStateData: BlogReducer,
-    ResumeStateData: ResumeReducer,
     NewsletterStateData: NewsletterReducer,
     CommentStateData: CommentReducer,
     AchievementStateData: AchievementReducer,
@@ -43,6 +43,8 @@ export default combineReducers({
     PlacementStateData: PlacementReducer,
     CareerStateData: CareerReducer,
     PortfolioStateData: PortfolioReducer,
-    SubServiceStateData : SubServiceReducer,
-    PlacedStudentStateData : PlacedStudentReducer
+    SubServiceStateData: SubServiceReducer,
+    PlacedStudentStateData: PlacedStudentReducer,
+    ApplicationStateData: ApplicationReducer,
+    PlacementApplicationStateData: PlacementApplicationReducer
 })

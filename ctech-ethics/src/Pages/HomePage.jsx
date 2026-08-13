@@ -153,15 +153,16 @@ export default function HomePage() {
                       exit="exit"
                       className="hero-headline-word"
                       style={{
-                        background: `linear-gradient(135deg, ${slide.accent} 0%, #a855f7 100%)`,
+                        background: `linear-gradient(135deg, ${slide?.accent || '#47b2e4'} 0%, #a855f7 100%)`,
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text',
                         marginBottom: 6,
                         lineHeight: 1.15,
+                        display: 'inline-block',
                       }}
                     >
-                      {slide.headline}
+                      {slide?.headline || 'Your Business'}
                     </motion.h1>
                   </AnimatePresence>
 

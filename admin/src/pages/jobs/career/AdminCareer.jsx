@@ -267,7 +267,7 @@ export default function AdminCareer() {
                             <div className="act-strip">
                               <Link
                                 className="act-btn act-btn-edit"
-                                to={`/career/update/${item._id}`}
+                                to={`/companyjob/update/${item._id}`}
                                 data-tip="Edit"
                               >
                                 <i className="bi bi-pencil-square"></i>

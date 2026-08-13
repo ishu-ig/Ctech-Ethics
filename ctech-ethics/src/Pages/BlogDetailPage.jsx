@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import BlogCard from '../Components/BlogCard';
 import { getBlog } from '../Redux/ActionCreators/BlogActionCreators';
 
-/* ── Mock data — technical and non-technical mix ── */
+/* ── Fallback post data ── */
 const POST = {
     title: 'Building Scalable Web Architecture with Next.js & React 19',
     category: 'Engineering',
@@ -122,7 +122,7 @@ export default function BlogDetailsPage() {
                     sections: found.sections || [],
                     author: {
                         name: typeof found.author === 'object' ? (found.author?.name || 'CTech Team') : (found.author || POST.author.name),
-                        role: typeof found.author === 'object' ? (found.author?.role || 'Engineer') : POST.author.role,
+                        role: typeof found.author === 'object' ? (found.author?.role || 'Tech Author') : POST.author.role,
                         avatar: typeof found.author === 'object' && found.author?.avatar ? found.author.avatar : POST.author.avatar,
                         bio: typeof found.author === 'object' && found.author?.bio ? found.author.bio : POST.author.bio,
                     },
@@ -134,17 +134,15 @@ export default function BlogDetailsPage() {
     }, [rawState, id]);
 
     const [copied, setCopied] = useState(false);
-
-    // Comment Form State
     const [comments, setComments] = useState(INITIAL_COMMENTS);
     const [commentData, setCommentData] = useState({ name: '', email: '', body: '' });
-    const [commentStatus, setCommentStatus] = useState('idle'); // idle | loading | success | error
+    const [commentStatus, setCommentStatus] = useState('idle');
 
     const handleShare = (label) => {
         if (label === 'Copy link') {
             navigator.clipboard?.writeText(window.location.href).catch(() => { });
             setCopied(true);
-            setTimeout(() => setCopied(false), 1800);
+            setTimeout(() => setCopied(false), 2000);
         }
     };
 
@@ -153,8 +151,6 @@ export default function BlogDetailsPage() {
         if (!commentData.name.trim() || !commentData.body.trim()) return;
 
         setCommentStatus('loading');
-
-        // Simulate API delay, then update UI
         setTimeout(() => {
             const newComment = {
                 id: Date.now(),
@@ -169,98 +165,140 @@ export default function BlogDetailsPage() {
             setCommentStatus('success');
 
             setTimeout(() => setCommentStatus('idle'), 3000);
-        }, 800);
+        }, 600);
     };
 
     return (
-        <div className="blog-details">
-
-            {/* ══════════════ HERO BANNER ══════════════ */}
-            <div className="container">
-                <motion.div
-                    className="hero-img"
-                    initial={{ opacity: 0, y: 20 }}
+        <div className="blog-detail-wrapper py-4 py-md-5">
+            <div className="container" style={{ maxWidth: '1120px' }}>
+                
+                {/* ══════════════ 1. HEADER SECTION ══════════════ */}
+                <motion.div 
+                    className="blog-detail-header text-center mx-auto mb-4 mb-md-5"
+                    style={{ maxWidth: '840px' }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.5 }}
                 >
-                    <img src={postDoc.image} alt={postDoc.title} />
-                    <div className="meta-overlay">
-                        <div className="meta-categories">
-                            <Link to="/blog" className="category">{postDoc.category}</Link>
-                            <span className="divider">•</span>
-                            <span className="reading-time"><i className="bi bi-clock"></i>{postDoc.readTime}</span>
+                    {/* Category pill */}
+                    <div className="d-flex align-items-center justify-content-center gap-2 mb-3">
+                        <span 
+                            className="blog-detail-category-badge"
+                            style={{
+                                backgroundColor: `${postDoc.categoryColor || '#47b2e4'}18`,
+                                color: postDoc.categoryColor || '#47b2e4',
+                                border: `1px solid ${postDoc.categoryColor || '#47b2e4'}35`,
+                            }}
+                        >
+                            <i className="bi bi-tag-fill me-1" style={{ fontSize: '0.75rem' }}></i>
+                            {postDoc.category}
+                        </span>
+                        <span className="blog-detail-meta-dot">•</span>
+                        <span className="blog-detail-meta-item">
+                            <i className="bi bi-clock me-1"></i> {postDoc.readTime}
+                        </span>
+                    </div>
+
+                    {/* Article Main Headline */}
+                    <h1 className="blog-detail-title mb-4">
+                        {postDoc.title}
+                    </h1>
+
+                    {/* Author & Published Info Row */}
+                    <div className="blog-detail-author-row d-flex flex-wrap align-items-center justify-content-center gap-3">
+                        <div className="d-flex align-items-center gap-2">
+                            {postDoc.author.avatar ? (
+                                <img src={postDoc.author.avatar} alt={postDoc.author.name} className="blog-detail-author-avatar" />
+                            ) : (
+                                <div className="blog-detail-author-avatar-placeholder">
+                                    {postDoc.author.name.charAt(0)}
+                                </div>
+                            )}
+                            <div className="text-start">
+                                <div className="blog-detail-author-name">{postDoc.author.name}</div>
+                                <div className="blog-detail-author-role">{postDoc.author.role}</div>
+                            </div>
+                        </div>
+
+                        <span className="blog-detail-meta-divider d-none d-sm-inline">|</span>
+
+                        <div className="blog-detail-publish-date text-muted">
+                            <i className="bi bi-calendar3 me-1"></i> {postDoc.date}
                         </div>
                     </div>
                 </motion.div>
-            </div>
 
-            {/* ══════════════ CONTENT + TOC LAYOUT ══════════════ */}
-            <div className="container">
-                <div className="blog-details-layout">
+                {/* ══════════════ 2. FEATURED COVER IMAGE ══════════════ */}
+                <motion.div 
+                    className="blog-detail-cover-wrapper mb-5"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.15 }}
+                >
+                    <img src={postDoc.image} alt={postDoc.title} className="blog-detail-cover-img" />
+                </motion.div>
 
-                    {/* ── Sticky TOC (desktop only) ── */}
-                    <aside className="blog-toc d-none d-lg-block">
-                        <div className="blog-toc-inner">
-                            <span className="blog-toc-title">On this page</span>
-                            <ul>
-                                {TOC.map((item) => (
-                                    <li key={item.id}>
-                                        <a href={`#${item.id}`}>{item.label}</a>
-                                    </li>
-                                ))}
-                            </ul>
+                {/* ══════════════ 3. TWO-COLUMN LAYOUT (TOC + ARTICLE) ══════════════ */}
+                <div className="row g-4 justify-content-between">
+                    
+                    {/* LEFT SIDEBAR: Sticky Table of Contents & Social Share (Desktop) */}
+                    <div className="col-lg-3 d-none d-lg-block">
+                        <div className="blog-detail-sidebar sticky-top" style={{ top: '100px', zIndex: 10 }}>
+                            <div className="blog-detail-sidebar-card mb-4">
+                                <div className="blog-sidebar-title mb-3">
+                                    <i className="bi bi-list-nested me-2 text-primary"></i> On this page
+                                </div>
+                                <ul className="blog-toc-list">
+                                    {TOC.map((item) => (
+                                        <li key={item.id}>
+                                            <a href={`#${item.id}`} className="blog-toc-link">
+                                                <span className="toc-dot"></span> {item.label}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
 
-                            <div className="blog-toc-share">
-                                <span className="blog-toc-title">Share</span>
-                                <div className="blog-share-row">
+                            <div className="blog-detail-sidebar-card text-center">
+                                <div className="blog-sidebar-title mb-3">Share Article</div>
+                                <div className="d-flex align-items-center justify-content-center gap-2">
                                     {SHARE_LINKS.map((s) => (
                                         <button
                                             key={s.label}
-                                            className="blog-share-btn"
-                                            aria-label={s.label}
+                                            className="blog-share-icon-btn"
+                                            title={s.label}
                                             onClick={() => handleShare(s.label)}
                                         >
                                             <i className={`bi ${s.icon}`}></i>
                                         </button>
                                     ))}
                                 </div>
-                                {copied && <span className="blog-copied-tag">Link copied!</span>}
-                            </div>
-                        </div>
-                    </aside>
-
-                    {/* ── Article ── */}
-                    <article className="article-content">
-                        <div className="content-header">
-                            <h1 className="title">{postDoc.title}</h1>
-                            <div className="author-info">
-                                <div className="author-details">
-                                    {postDoc.author.avatar ? (
-                                        <img src={postDoc.author.avatar} alt={postDoc.author.name} className="author-img" />
-                                    ) : (
-                                        <div className="author-img d-flex align-items-center justify-content-center bg-primary text-white rounded-circle fw-bold fs-5">
-                                            {postDoc.author.name.charAt(0)}
-                                        </div>
-                                    )}
-                                    <div className="info">
-                                        <h4>{postDoc.author.name}</h4>
-                                        <span className="role">{postDoc.author.role}</span>
+                                {copied && (
+                                    <div className="blog-copied-toast mt-2">
+                                        <i className="bi bi-check-circle-fill me-1"></i> Link copied!
                                     </div>
-                                </div>
-                                <div className="post-meta">
-                                    <i className="bi bi-calendar3"></i>{postDoc.date}
-                                    <span className="divider">•</span>
-                                    <i className="bi bi-clock"></i>{postDoc.readTime}
-                                </div>
+                                )}
                             </div>
                         </div>
+                    </div>
 
-                        <div className="content">
+                    {/* MAIN COLUMN: Article Content */}
+                    <div className="col-12 col-lg-8 col-xl-8">
+                        <article className="blog-detail-article">
+                            
+                            {/* Summary / Lead paragraph */}
+                            {postDoc.summary && (
+                                <p className="blog-lead-paragraph mb-4">
+                                    {postDoc.summary}
+                                </p>
+                            )}
+
+                            {/* Render Post Content */}
                             {postDoc.content ? (
-                                <div dangerouslySetInnerHTML={{ __html: postDoc.content }} />
+                                <div className="blog-formatted-content" dangerouslySetInnerHTML={{ __html: postDoc.content }} />
                             ) : postDoc.sections && postDoc.sections.length > 0 ? (
                                 postDoc.sections.map((sec, idx) => (
-                                    <div key={idx} className="mb-4">
+                                    <div key={idx} className="blog-section-block mb-4">
                                         {sec.subheading && <h2 id={`sec-${idx}`}>{sec.subheading}</h2>}
                                         {sec.paragraphs && sec.paragraphs.map((p, pIdx) => (
                                             <p key={pIdx}>{p}</p>
@@ -268,189 +306,204 @@ export default function BlogDetailsPage() {
                                     </div>
                                 ))
                             ) : (
-                                <>
-                                    <p className="lead" id="intro">
-                                        {postDoc.summary || "Modern web applications live or die by how fast the first byte reaches the browser."}
-                                    </p>
-
-                                    <h2 id="server-components">Key Highlights</h2>
+                                <div className="blog-formatted-content">
+                                    <h2 id="server-components">Key Architectural Principles</h2>
                                     <p>
-                                        Our engineering team prioritizes performance, security, and developer experience when shipping digital solutions for modern businesses.
+                                        Modern software demands modularity, strict data contracts, and edge optimization. When crafting applications for enterprise scale, front-end speed is deeply intertwined with backend data delivery mechanisms.
                                     </p>
-                                    <ul>
-                                        <li>Optimized server rendering and client-side bundle efficiency.</li>
-                                        <li>Clean component modularity and robust API integrations.</li>
-                                        <li>Continuous monitoring and proactive vulnerability patching.</li>
-                                    </ul>
-                                </>
-                            )}
-                        </div>
 
-                        {/* Tags + share (mobile/tablet) */}
-                        <div className="meta-bottom">
-                            <div>
-                                <h4>Tagged under</h4>
-                                <div className="tags">
-                                    <Link to="/blog" className="tag">{postDoc.category || "Engineering"}</Link>
-                                    <Link to="/blog" className="tag">Web</Link>
-                                    <Link to="/blog" className="tag">CTech</Link>
+                                    <blockquote className="blog-quote-box my-4">
+                                        &ldquo;High performance isn&apos;t just an optimization pass at the end of development — it&apos;s an architectural mindset built into every iteration.&rdquo;
+                                        <cite className="d-block mt-2 font-semibold">— Alex Rivera, Tech Lead</cite>
+                                    </blockquote>
+
+                                    <h2 id="streaming-ssr">Core Best Practices</h2>
+                                    <p>
+                                        Our engineering teams utilize battle-tested patterns to achieve maximum performance and stability:
+                                    </p>
+                                    <ul className="blog-check-list my-3">
+                                        <li><i className="bi bi-check2-circle text-primary me-2"></i> Optimized server rendering and edge-cached static pages.</li>
+                                        <li><i className="bi bi-check2-circle text-primary me-2"></i> Clean component modularity and decoupled REST/GraphQL APIs.</li>
+                                        <li><i className="bi bi-check2-circle text-primary me-2"></i> Continuous security scanning, OWASP compliance, and zero-downtime releases.</li>
+                                    </ul>
                                 </div>
-                            </div>
-                            <div className="d-lg-none">
-                                <h4>Share this article</h4>
-                                <div className="social-links">
+                            )}
+
+                            {/* Tags & Mobile Share */}
+                            <div className="blog-detail-tags-wrapper d-flex flex-wrap align-items-center justify-content-between gap-3 my-5 py-4 border-top border-bottom">
+                                <div className="d-flex align-items-center gap-2 flex-wrap">
+                                    <span className="fw-bold me-2"><i className="bi bi-tags-fill me-1 text-primary"></i> Tags:</span>
+                                    <Link to="/blog" className="blog-tag-pill">{postDoc.category || "Engineering"}</Link>
+                                    <Link to="/blog" className="blog-tag-pill">Web Tech</Link>
+                                    <Link to="/blog" className="blog-tag-pill">CTech Solutions</Link>
+                                </div>
+
+                                <div className="d-flex align-items-center gap-2 d-lg-none">
+                                    <span className="small text-muted me-1">Share:</span>
                                     {SHARE_LINKS.map((s) => (
-                                        <a href="#!" key={s.label} aria-label={s.label} onClick={(e) => { e.preventDefault(); handleShare(s.label); }}>
+                                        <button key={s.label} className="blog-share-icon-btn btn-sm" onClick={() => handleShare(s.label)}>
                                             <i className={`bi ${s.icon}`}></i>
-                                        </a>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
-                        </div>
 
-                        {/* ── Author Profile Card ── */}
-                        <div className="blog-author-card mt-5">
-                            {postDoc.author.avatar ? (
-                                <img src={postDoc.author.avatar} alt={postDoc.author.name} />
-                            ) : (
-                                <div className="avatar-img d-flex align-items-center justify-content-center bg-primary text-white rounded-circle fw-bold fs-4 me-3" style={{ width: 64, height: 64, flexShrink: 0 }}>
-                                    {postDoc.author.name.charAt(0)}
-                                </div>
-                            )}
-                            <div>
-                                <span className="blog-author-card-label">Written by</span>
-                                <h4>{postDoc.author.name}</h4>
-                                <p>{postDoc.author.bio}</p>
-                                <div className="social-links">
-                                    <a href="#!" aria-label="LinkedIn"><i className="bi bi-linkedin"></i></a>
-                                    <a href="#!" aria-label="Twitter"><i className="bi bi-twitter-x"></i></a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* ── Prev / Next Navigation ── */}
-                        <div className="blog-prevnext">
-                            <Link to="/blog/zero-trust-cybersecurity-cloud-native" className="blog-prevnext-link prev">
-                                <span className="blog-prevnext-label"><i className="bi bi-arrow-left me-1"></i>Previous</span>
-                                <span className="blog-prevnext-title">Zero Trust Cybersecurity Architecture for Cloud Native Infrastructure</span>
-                            </Link>
-                            <Link to="/blog/fostering-innovation-remote-teams" className="blog-prevnext-link next">
-                                <span className="blog-prevnext-label">Next<i className="bi bi-arrow-right ms-1"></i></span>
-                                <span className="blog-prevnext-title">Fostering a Culture of Innovation in Remote-First Teams</span>
-                            </Link>
-                        </div>
-
-                        {/* ── Comments Section ── */}
-                        <section className="blog-comments mt-5 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                            <div className="comments-header mb-4">
-                                <h3 className="title m-0">Discussion</h3>
-                                <div className="comments-stats">
-                                    <span className="count px-2 py-1 bg-primary text-white rounded me-2">{comments.length}</span>
-                                    <span className="label text-muted">Comments</span>
+                            {/* ── Author Bio Box ── */}
+                            <div className="blog-author-box p-4 rounded-4 mb-5">
+                                <div className="d-flex align-items-start gap-3">
+                                    {postDoc.author.avatar ? (
+                                        <img src={postDoc.author.avatar} alt={postDoc.author.name} className="blog-author-box-img" />
+                                    ) : (
+                                        <div className="blog-author-box-img-placeholder">
+                                            {postDoc.author.name.charAt(0)}
+                                        </div>
+                                    )}
+                                    <div className="flex-grow-1">
+                                        <span className="blog-author-badge mb-1">WRITTEN BY</span>
+                                        <h4 className="fw-bold mb-1" style={{ fontSize: '1.15rem' }}>{postDoc.author.name}</h4>
+                                        <p className="small mb-3 text-muted">{postDoc.author.bio}</p>
+                                        <div className="d-flex gap-2">
+                                            <a href="#!" className="blog-author-social-link"><i className="bi bi-linkedin"></i></a>
+                                            <a href="#!" className="blog-author-social-link"><i className="bi bi-twitter-x"></i></a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Comment List */}
-                            <div className="comments-container mb-5">
-                                {comments.map((c) => (
-                                    <div className="comment-thread mb-4" key={c.id}>
-                                        <div className="comment-box d-flex gap-3">
-                                            <div className="avatar-wrapper flex-shrink-0">
-                                                <div style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: '#47b2e4', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>
+                            {/* ── Prev / Next Navigation ── */}
+                            <div className="blog-nav-row row g-3 mb-5">
+                                <div className="col-sm-6">
+                                    <Link to="/blog/zero-trust-cybersecurity-cloud-native" className="blog-nav-card h-100">
+                                        <span className="nav-dir"><i className="bi bi-arrow-left me-1"></i> Previous Article</span>
+                                        <h5 className="nav-title text-truncate">Zero Trust Cybersecurity Architecture</h5>
+                                    </Link>
+                                </div>
+                                <div className="col-sm-6">
+                                    <Link to="/blog/fostering-innovation-remote-teams" className="blog-nav-card h-100 text-sm-end">
+                                        <span className="nav-dir">Next Article <i className="bi bi-arrow-right ms-1"></i></span>
+                                        <h5 className="nav-title text-truncate">Fostering Innovation in Remote Teams</h5>
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* ── Discussion & Comments Section ── */}
+                            <section className="blog-comments-wrapper pt-4">
+                                <div className="d-flex align-items-center justify-content-between mb-4">
+                                    <h3 className="h4 fw-bold m-0">Discussion</h3>
+                                    <span className="badge rounded-pill bg-primary px-3 py-2">
+                                        {comments.length} Comments
+                                    </span>
+                                </div>
+
+                                {/* Comments List */}
+                                <div className="comments-list mb-5">
+                                    {comments.map((c) => (
+                                        <div key={c.id} className="blog-comment-card p-3 p-md-4 rounded-4 mb-3">
+                                            <div className="d-flex align-items-start gap-3">
+                                                <div className="blog-comment-avatar">
                                                     {c.name.charAt(0)}
                                                 </div>
-                                            </div>
-                                            <div className="comment-content flex-grow-1 p-3 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                                                <div className="comment-header d-flex justify-content-between mb-2">
-                                                    <div className="user-info">
-                                                        <h4 className="m-0 fs-6 fw-bold">{c.name}</h4>
-                                                        <div className="time-badge text-muted small"><i className="bi bi-clock me-1"></i>{c.time}</div>
+                                                <div className="flex-grow-1">
+                                                    <div className="d-flex align-items-center justify-content-between mb-1">
+                                                        <h5 className="fw-bold m-0" style={{ fontSize: '0.98rem' }}>{c.name}</h5>
+                                                        <span className="small text-muted"><i className="bi bi-clock me-1"></i>{c.time}</span>
                                                     </div>
-                                                    <div className="engagement text-muted small">
-                                                        <span className="likes"><i className="bi bi-heart-fill text-danger me-1"></i>{c.likes}</span>
+                                                    <p className="mb-2" style={{ fontSize: '0.92rem', lineHeight: '1.6' }}>{c.body}</p>
+                                                    <div className="d-flex align-items-center gap-3">
+                                                        <button className="blog-comment-action-btn"><i className="bi bi-heart me-1"></i> Like ({c.likes})</button>
+                                                        <button className="blog-comment-action-btn"><i className="bi bi-reply me-1"></i> Reply</button>
                                                     </div>
-                                                </div>
-                                                <div className="comment-body mb-2"><p className="m-0" style={{ fontSize: '0.95rem' }}>{c.body}</p></div>
-                                                <div className="comment-actions gap-3 d-flex small">
-                                                    <button className="action-btn text-muted bg-transparent border-0 p-0"><i className="bi bi-heart me-1"></i>Like</button>
-                                                    <button className="action-btn text-muted bg-transparent border-0 p-0"><i className="bi bi-reply me-1"></i>Reply</button>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
 
-                            {/* Leave a Comment Form */}
-                            <div className="leave-reply p-4 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                                <h4 className="mb-3 fw-bold fs-5">Leave a Reply</h4>
-                                <p className="text-muted small mb-4">Your email address will not be published. Required fields are marked *</p>
+                                {/* Leave a Comment Form */}
+                                <div className="blog-comment-form-card p-4 rounded-4">
+                                    <h4 className="fw-bold mb-1" style={{ fontSize: '1.2rem' }}>Leave a Reply</h4>
+                                    <p className="text-muted small mb-4">Your email address will not be published. Required fields are marked *</p>
 
-                                {commentStatus === 'success' && (
-                                    <div className="alert alert-success py-2 px-3 small">Your comment has been posted successfully!</div>
-                                )}
+                                    {commentStatus === 'success' && (
+                                        <div className="alert alert-success py-2.5 px-3 small rounded-3 mb-4 d-flex align-items-center gap-2">
+                                            <i className="bi bi-check-circle-fill fs-5"></i> Your comment has been posted successfully!
+                                        </div>
+                                    )}
 
-                                <form onSubmit={handleCommentSubmit}>
-                                    <div className="row g-3">
-                                        <div className="col-md-6">
-                                            <label className="form-label small text-muted">Name *</label>
-                                            <input
-                                                type="text"
-                                                className="form-control bg-transparent text-white"
-                                                style={{ borderColor: 'rgba(255,255,255,0.1)' }}
-                                                required
-                                                value={commentData.name}
-                                                onChange={(e) => setCommentData({ ...commentData, name: e.target.value })}
-                                            />
+                                    <form onSubmit={handleCommentSubmit}>
+                                        <div className="row g-3">
+                                            <div className="col-md-6">
+                                                <label className="form-label small fw-semibold">Your Name *</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control blog-comment-input"
+                                                    placeholder="John Doe"
+                                                    required
+                                                    value={commentData.name}
+                                                    onChange={(e) => setCommentData({ ...commentData, name: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label small fw-semibold">Email Address (Optional)</label>
+                                                <input
+                                                    type="email"
+                                                    className="form-control blog-comment-input"
+                                                    placeholder="john@example.com"
+                                                    value={commentData.email}
+                                                    onChange={(e) => setCommentData({ ...commentData, email: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="col-12">
+                                                <label className="form-label small fw-semibold">Your Comment *</label>
+                                                <textarea
+                                                    className="form-control blog-comment-input"
+                                                    rows="4"
+                                                    placeholder="Share your thoughts or feedback..."
+                                                    required
+                                                    value={commentData.body}
+                                                    onChange={(e) => setCommentData({ ...commentData, body: e.target.value })}
+                                                ></textarea>
+                                            </div>
+                                            <div className="col-12 mt-4">
+                                                <button
+                                                    type="submit"
+                                                    className="blog-submit-btn"
+                                                    disabled={commentStatus === 'loading'}
+                                                >
+                                                    {commentStatus === 'loading' ? (
+                                                        <>
+                                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                            Posting...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            Post Comment <i className="bi bi-send-fill ms-1"></i>
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="col-md-6">
-                                            <label className="form-label small text-muted">Email (Optional)</label>
-                                            <input
-                                                type="email"
-                                                className="form-control bg-transparent text-white"
-                                                style={{ borderColor: 'rgba(255,255,255,0.1)' }}
-                                                value={commentData.email}
-                                                onChange={(e) => setCommentData({ ...commentData, email: e.target.value })}
-                                            />
-                                        </div>
-                                        <div className="col-12">
-                                            <label className="form-label small text-muted">Comment *</label>
-                                            <textarea
-                                                className="form-control bg-transparent text-white"
-                                                rows="4"
-                                                style={{ borderColor: 'rgba(255,255,255,0.1)' }}
-                                                required
-                                                value={commentData.body}
-                                                onChange={(e) => setCommentData({ ...commentData, body: e.target.value })}
-                                            ></textarea>
-                                        </div>
-                                        <div className="col-12 mt-4">
-                                            <button
-                                                type="submit"
-                                                className="btn btn-primary px-4 py-2 rounded-pill fw-bold"
-                                                disabled={commentStatus === 'loading'}
-                                            >
-                                                {commentStatus === 'loading' ? 'Posting...' : 'Post Comment'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </section>
-                    </article>
+                                    </form>
+                                </div>
+                            </section>
+
+                        </article>
+                    </div>
+
                 </div>
+
             </div>
 
-            {/* ══════════════ RELATED ARTICLES ══════════════ */}
-            <section className="blog-related section mt-5">
-                <div className="container">
+            {/* ══════════════ 4. RELATED ARTICLES SECTION ══════════════ */}
+            <section className="blog-related-section section mt-5 pt-5 border-top">
+                <div className="container" style={{ maxWidth: '1120px' }}>
                     <div className="section-title text-center mb-4 mb-md-5">
                         <h2>Related <span className="blog-gradient-text">Articles</span></h2>
-                        <p>More technical insights and leadership strategies from our team.</p>
+                        <p>Explore more technical insights and leadership strategies from our engineering team.</p>
                     </div>
-                    <div className="row g-2 g-sm-3 g-md-4">
+                    <div className="row g-3 g-md-4">
                         {RELATED.map((post, idx) => (
-                            <div className="col-6 col-md-6 col-lg-4 d-flex" key={post.id}>
+                            <div className="col-12 col-md-6 col-lg-4 d-flex" key={post.id}>
                                 <BlogCard post={post} index={idx} />
                             </div>
                         ))}
