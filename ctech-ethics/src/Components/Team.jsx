@@ -71,6 +71,65 @@ const normalizeTeamMember = (m, idx) => {
   };
 };
 
+// Shared card renderer — used for both the director spotlight and core team members
+const TeamMemberCard = ({ member, inView, delay = 0, wide = false }) => (
+  <motion.div
+    className={`team-member-card h-100${wide ? ' team-member-card--wide' : ''}`}
+    initial={{ opacity: 0, y: 45, scale: 0.95 }}
+    animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+    transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+    whileHover={{ y: -8 }}
+  >
+    {/* Image Section */}
+    <div className="member-pic-wrap">
+      <motion.img
+        src={member.image}
+        className="img-fluid member-img"
+        alt={member.name}
+        whileHover={{ scale: 1.08 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      />
+      <span className="member-role-badge">{member.badge}</span>
+    </div>
+
+    {/* Info Section */}
+    <div className="member-info-body d-flex flex-column h-100">
+      <h4 className="member-name">{member.name}</h4>
+      <span className="member-title">{member.role}</span>
+      <p className="member-bio">{member.bio}</p>
+
+      {/* Expertise Skills */}
+      <div className="member-skills d-flex flex-wrap gap-1 mb-3 mt-auto">
+        {member.skills.map((skill) => (
+          <motion.span
+            key={skill}
+            className="skill-chip"
+            whileHover={{ scale: 1.08, y: -1 }}
+          >
+            {skill}
+          </motion.span>
+        ))}
+      </div>
+
+      {/* Social Links */}
+      <div className="social-links d-flex align-items-center">
+        <motion.a href={member.social.twitter} aria-label="Twitter" whileHover={{ scale: 1.18, rotate: 6, y: -2 }}>
+          <i className="bi bi-twitter-x"></i>
+        </motion.a>
+        <motion.a href={member.social.facebook} aria-label="Facebook" whileHover={{ scale: 1.18, rotate: -6, y: -2 }}>
+          <i className="bi bi-facebook"></i>
+        </motion.a>
+        <motion.a href={member.social.instagram} aria-label="Instagram" whileHover={{ scale: 1.18, rotate: 6, y: -2 }}>
+          <i className="bi bi-instagram"></i>
+        </motion.a>
+        <motion.a href={member.social.linkedin} aria-label="LinkedIn" whileHover={{ scale: 1.18, rotate: -6, y: -2 }}>
+          <i className="bi bi-linkedin"></i>
+        </motion.a>
+      </div>
+    </div>
+  </motion.div>
+);
+
 export default function Team() {
   const dispatch = useDispatch();
   const rawState = useSelector((state) => state.TeamsStateData);
@@ -128,64 +187,10 @@ export default function Team() {
 
       <div className="container">
 
-        {/* ── Director Spotlight Card (Centered Outside Carousel) ── */}
+        {/* ── Director Spotlight (same card as core members, wide + centered) ── */}
         {director && (
-          <div className="director-spotlight-wrap mb-5 pb-4">
-            <motion.div
-              className="director-card"
-              initial={{ opacity: 0, y: 45, scale: 0.97 }}
-              animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {/* Image Section */}
-              <div className="director-pic-wrap">
-                <motion.img
-                  src={director.image}
-                  className="director-img"
-                  alt={director.name}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                />
-                <span className="director-badge">{director.badge}</span>
-              </div>
-
-              {/* Info Section */}
-              <div className="director-info-body">
-                <span className="director-eyebrow">Leadership</span>
-                <h3 className="director-name">{director.name}</h3>
-                <span className="director-title">{director.role}</span>
-                <p className="director-bio">{director.bio}</p>
-
-                {/* Expertise Skills */}
-                <div className="director-skills d-flex flex-wrap gap-2 mb-3">
-                  {director.skills.map((skill) => (
-                    <motion.span
-                      key={skill}
-                      className="skill-chip"
-                      whileHover={{ scale: 1.08, y: -1 }}
-                    >
-                      {skill}
-                    </motion.span>
-                  ))}
-                </div>
-
-                {/* Social Links */}
-                <div className="social-links d-flex align-items-center">
-                  <motion.a href={director.social.twitter} aria-label="Twitter" whileHover={{ scale: 1.18, rotate: 6, y: -2 }}>
-                    <i className="bi bi-twitter-x"></i>
-                  </motion.a>
-                  <motion.a href={director.social.facebook} aria-label="Facebook" whileHover={{ scale: 1.18, rotate: -6, y: -2 }}>
-                    <i className="bi bi-facebook"></i>
-                  </motion.a>
-                  <motion.a href={director.social.instagram} aria-label="Instagram" whileHover={{ scale: 1.18, rotate: 6, y: -2 }}>
-                    <i className="bi bi-instagram"></i>
-                  </motion.a>
-                  <motion.a href={director.social.linkedin} aria-label="LinkedIn" whileHover={{ scale: 1.18, rotate: -6, y: -2 }}>
-                    <i className="bi bi-linkedin"></i>
-                  </motion.a>
-                </div>
-              </div>
-            </motion.div>
+          <div className="director-spotlight-wrap mb-5 pb-4 d-flex justify-content-center">
+            <TeamMemberCard member={director} inView={inView} delay={0.1} wide />
           </div>
         )}
 
@@ -242,61 +247,7 @@ export default function Team() {
           >
             {carouselTeam.map((member, idx) => (
               <SwiperSlide key={member.id}>
-                <motion.div
-                  className="team-member-card h-100"
-                  initial={{ opacity: 0, y: 45, scale: 0.95 }}
-                  animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-                  transition={{ duration: 0.55, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ y: -8 }}
-                >
-                  {/* Image Section */}
-                  <div className="member-pic-wrap">
-                    <motion.img
-                      src={member.image}
-                      className="img-fluid member-img"
-                      alt={member.name}
-                      whileHover={{ scale: 1.08 }}
-                      transition={{ duration: 0.5, ease: 'easeOut' }}
-                    />
-                    <span className="member-role-badge">{member.badge}</span>
-                  </div>
-
-                  {/* Info Section */}
-                  <div className="member-info-body d-flex flex-column h-100">
-                    <h4 className="member-name">{member.name}</h4>
-                    <span className="member-title">{member.role}</span>
-                    <p className="member-bio">{member.bio}</p>
-
-                    {/* Expertise Skills */}
-                    <div className="member-skills d-flex flex-wrap gap-1 mb-3 mt-auto">
-                      {member.skills.map((skill) => (
-                        <motion.span
-                          key={skill}
-                          className="skill-chip"
-                          whileHover={{ scale: 1.08, y: -1 }}
-                        >
-                          {skill}
-                        </motion.span>
-                      ))}
-                    </div>
-
-                    {/* Social Links */}
-                    <div className="social-links d-flex align-items-center">
-                      <motion.a href={member.social.twitter} aria-label="Twitter" whileHover={{ scale: 1.18, rotate: 6, y: -2 }}>
-                        <i className="bi bi-twitter-x"></i>
-                      </motion.a>
-                      <motion.a href={member.social.facebook} aria-label="Facebook" whileHover={{ scale: 1.18, rotate: -6, y: -2 }}>
-                        <i className="bi bi-facebook"></i>
-                      </motion.a>
-                      <motion.a href={member.social.instagram} aria-label="Instagram" whileHover={{ scale: 1.18, rotate: 6, y: -2 }}>
-                        <i className="bi bi-instagram"></i>
-                      </motion.a>
-                      <motion.a href={member.social.linkedin} aria-label="LinkedIn" whileHover={{ scale: 1.18, rotate: -6, y: -2 }}>
-                        <i className="bi bi-linkedin"></i>
-                      </motion.a>
-                    </div>
-                  </div>
-                </motion.div>
+                <TeamMemberCard member={member} inView={inView} delay={idx * 0.12} />
               </SwiperSlide>
             ))}
           </Swiper>
