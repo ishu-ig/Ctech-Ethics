@@ -106,7 +106,12 @@ async function updateRecord(req, res) {
             `;
 
             try {
-                await mailer(data.email, subject, htmlMessage);
+                await mailer.sendMail({
+                    from: process.env.MAIL_SENDER,
+                    to: data.email,
+                    subject: subject,
+                    html: htmlMessage,
+                });
                 console.log(`Notification email sent to ${data.email} for status: ${newStatus}`);
             } catch (mailError) {
                 console.error("Database updated, but failed to send status update email:", mailError);
