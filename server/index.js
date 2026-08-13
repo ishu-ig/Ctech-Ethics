@@ -14,8 +14,7 @@ const whitelist = [
     "http://localhost:8000",
     "http://localhost:4000",
     "http://localhost:5000",
-    "https://my-portfolio-x6zy.onrender.com",
-    "https://my-portfolioadmin.vercel.app",
+    "https://ctech-ethics.vercel.app",
     "https://ctech-ethics.onrender.com"
 ];
 
