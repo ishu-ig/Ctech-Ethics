@@ -36,11 +36,13 @@ export default function Navbar() {
       setActiveLink('About');
     } else if (path.startsWith('/services')) {
       setActiveLink('Services');
+    } else if (path.startsWith('/portfolio') || path.startsWith('/portfoliodetail')) {
+      setActiveLink('Portfolio');
     } else if (path.startsWith('/blog')) {
       setActiveLink('Blog');
     } else if (path.startsWith('/career')) {
       setActiveLink('Careers');
-    } else if (path.startsWith('/placementjobs') || path.startsWith('/placements')) {
+    } else if (path.startsWith('/placementjobs') || path.startsWith('/placement')) {
       setActiveLink('Placements');
     } else if (path.startsWith('/contact')) {
       setActiveLink('Contact');
