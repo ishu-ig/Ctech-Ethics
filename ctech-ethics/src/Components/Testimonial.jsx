@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { motion, useInView } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
-import { getTestimonials } from '../Redux/ActionCreators/TestimonialsActionCreators';
+import { getTestimonial } from '../Redux/ActionCreators/TestimonialActionCreators';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -77,7 +77,7 @@ export default function Testimonial() {
   const rawState = useSelector((state) => state.TestimonialStateData);
 
   useEffect(() => {
-    dispatch(getTestimonials());
+    dispatch(getTestimonial());
   }, [dispatch]);
 
   // Normalize + filter to active testimonials only (falls back to static data if empty)
