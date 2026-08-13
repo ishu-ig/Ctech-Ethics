@@ -24,8 +24,28 @@ async function createRecord(req, res) {
         const data = new Application(payload);
         await data.save();
 
-        // Optional: populate before sending back to frontend
-        // await data.populate("jobId", JOB_POPULATE_FIELDS);
+        // Send application confirmation email to candidate
+        try {
+            await mailer.sendMail({
+                from: process.env.MAIL_SENDER,
+                to: data.email,
+                subject: `Application Received - ${data.jobTitle} | ${process.env.SITE_NAME}`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; border: 1px solid #e0e0e0; border-radius: 8px;">
+                        <h2 style="color: #0d6efd; margin-top: 0;">Application Received!</h2>
+                        <p>Dear <strong>${data.name}</strong>,</p>
+                        <p>Thank you for applying for the position of <strong>${data.jobTitle}</strong> at <strong>${process.env.SITE_NAME}</strong>.</p>
+                        <p>We have successfully received your application and resume. Our hiring team will review your profile and contact you if your qualifications match our requirements.</p>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+                        <p style="font-size: 13px; color: #777;">If you have any questions, please reply to this email.</p>
+                        <p style="font-size: 14px; margin-bottom: 0;">Best regards,<br/><strong>${process.env.SITE_NAME} Recruitment Team</strong></p>
+                    </div>
+                `
+            });
+            console.log(`Job application confirmation email sent to ${data.email}`);
+        } catch (mailErr) {
+            console.error("Application saved, but confirmation email failed:", mailErr);
+        }
 
         res.status(201).json({ result: "Done", data });
     } catch (error) {

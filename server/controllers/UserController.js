@@ -63,6 +63,28 @@ async function createRecord(req, res) {
 
                 await data.save();
 
+                try {
+                    mailer.sendMail({
+                        from: process.env.MAIL_SENDER,
+                        to: data.email,
+                        subject: `Welcome to ${process.env.SITE_NAME}!`,
+                        html: `
+                            <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #fcfcfc;">
+                                <h2 style="color: #0d6efd; text-align: center;">Welcome, ${data.name}!</h2>
+                                <p>Thank you for registering an account with <strong>${process.env.SITE_NAME}</strong>.</p>
+                                <p>Your registered username is: <strong>${data.username}</strong></p>
+                                <p>You can now log in to manage your profile and view applications.</p>
+                                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+                                <p style="font-size: 13px; color: #777; text-align: center;">Best regards,<br/><strong>Team ${process.env.SITE_NAME}</strong></p>
+                            </div>
+                        `
+                    }, (err) => {
+                        if (err) console.log("User welcome email send error:", err);
+                    });
+                } catch (e) {
+                    console.error("User welcome email failed:", e);
+                }
+
                 res.send({
                     result: "Done",
                     data

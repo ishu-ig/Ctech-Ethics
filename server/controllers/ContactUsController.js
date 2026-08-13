@@ -32,9 +32,9 @@ async function createRecord(req, res) {
                     <p style="color: #555;">Best Regards, <br> Team ${process.env.SITE_NAME}</p>
                 </div>
             `,
-        }, (error) => {
-            if (error) console.log("SEND FAILED:", error);
-            else console.log("SEND OK:", info.messageId, info.response);
+        }, (error, info) => {
+            if (error) console.log("ContactUs Email Send Failed:", error);
+            else console.log("ContactUs Email Sent Successfully:", info?.messageId);
         })
 
         res.send({

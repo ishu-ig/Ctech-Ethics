@@ -24,8 +24,28 @@ async function createRecord(req, res) {
         const data = new PlacementApplication(payload);
         await data.save();
 
-        // Optional: populate before sending back to frontend
-        // await data.populate("jobId", JOB_POPULATE_FIELDS);
+        // Send placement application confirmation email to candidate
+        try {
+            await mailer.sendMail({
+                from: process.env.MAIL_SENDER,
+                to: data.email,
+                subject: `Placement Drive Application Received - ${data.jobTitle} | ${process.env.SITE_NAME}`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; border: 1px solid #e0e0e0; border-radius: 8px;">
+                        <h2 style="color: #198754; margin-top: 0;">Placement Application Submitted!</h2>
+                        <p>Dear <strong>${data.name}</strong>,</p>
+                        <p>Thank you for submitting your placement application for <strong>${data.jobTitle}</strong> at <strong>${process.env.SITE_NAME}</strong>.</p>
+                        <p>Your details and resume have been successfully logged. Our placement coordinator will update you regarding interview schedules and campus drive details shortly.</p>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+                        <p style="font-size: 13px; color: #777;">If you have any questions, feel free to contact our placement team.</p>
+                        <p style="font-size: 14px; margin-bottom: 0;">Best regards,<br/><strong>${process.env.SITE_NAME} Placement Cell</strong></p>
+                    </div>
+                `
+            });
+            console.log(`Placement application confirmation email sent to ${data.email}`);
+        } catch (mailErr) {
+            console.error("Placement application saved, but confirmation email failed:", mailErr);
+        }
 
         res.status(201).json({ result: "Done", data });
     } catch (error) {

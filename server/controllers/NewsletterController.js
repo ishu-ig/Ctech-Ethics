@@ -1,9 +1,31 @@
 const Newsletter = require("../models/Newsletter")
+const mailer = require("../mailer/index")
 
 async function createRecord(req, res) {
     try {
         let data = new Newsletter(req.body)
         await data.save()
+
+        try {
+            mailer.sendMail({
+                from: process.env.MAIL_SENDER,
+                to: data.email,
+                subject: `Subscribed to Newsletter - ${process.env.SITE_NAME}`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px; background-color: #ffffff;">
+                        <h3 style="color: #0d6efd; text-align: center;">Welcome to Our Newsletter!</h3>
+                        <p>Thank you for subscribing to the <strong>${process.env.SITE_NAME}</strong> newsletter.</p>
+                        <p>You will now receive weekly tech updates, career opportunities, and industry insights directly in your inbox.</p>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+                        <p style="font-size: 13px; color: #888; text-align: center;">Best regards,<br/><strong>Team ${process.env.SITE_NAME}</strong></p>
+                    </div>
+                `
+            }, (err) => {
+                if (err) console.log("Newsletter email send failed:", err);
+            });
+        } catch (e) {
+            console.error("Newsletter email error:", e);
+        }
 
         res.send({
             result: "Done",
