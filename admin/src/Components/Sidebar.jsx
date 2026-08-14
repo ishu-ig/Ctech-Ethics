@@ -66,6 +66,7 @@ const navSections = [
     title: "SYSTEM & USERS",
     links: [
       { to: "/user", icon: "bi-person-badge-fill", label: "User Access" },
+      { to: "/note", icon: "bi-journal-text", label: "Notes" },
       { to: "/newsletter", icon: "bi-envelope-paper-fill", label: "Newsletter" },
       { to: "/contactUs", icon: "bi-chat-dots-fill", label: "Inquiries & Messages" },
     ],

@@ -14,8 +14,9 @@ const whitelist = [
     "http://localhost:8000",
     "http://localhost:4000",
     "http://localhost:5000",
-    "https://ctech-ethics.vercel.app",
-    "https://ctech-ethics.onrender.com"
+    "https://ctech-ethics.onrender.com",
+    "https://ctech-ethics.vercel.app"
+    
 ];
 
 const corsOptions = {
