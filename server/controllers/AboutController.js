@@ -1,4 +1,4 @@
-const AboutPage = require("../models/About");
+const About = require("../models/About");
 
 // Multipart/form-data (used because the routes accept an optional image
 // upload) sends nested objects/arrays as JSON strings. JSON.parse them
@@ -18,7 +18,7 @@ function parseField(value) {
 // a second one if one already exists (use updateRecord instead).
 async function createRecord(req, res) {
     try {
-        const existing = await AboutPage.findOne();
+        const existing = await About.findOne();
 
         if (existing)
             return res.status(400).json({
@@ -26,7 +26,7 @@ async function createRecord(req, res) {
                 reason: "About page already exists. Use update instead.",
             });
 
-        const data = new AboutPage({
+        const data = new About({
             companyInfo: parseField(req.body.companyInfo),
             storyline: parseField(req.body.storyline),
             aboutFeatures: parseField(req.body.aboutFeatures),
@@ -69,7 +69,7 @@ async function createRecord(req, res) {
 async function getRecord(req, res) {
     try {
 
-        const data = await AboutPage.getSingleton();
+        const data = await About.getSingleton();
 
         if (!data)
             return res.status(404).json({
@@ -94,7 +94,7 @@ async function getRecord(req, res) {
 async function getSingleRecord(req, res) {
     try {
 
-        const data = await AboutPage.findById(req.params._id);
+        const data = await About.findById(req.params._id);
 
         if (!data)
             return res.status(404).json({
@@ -124,7 +124,7 @@ async function getSingleRecord(req, res) {
 async function updateRecord(req, res) {
     try {
 
-        const data = await AboutPage.findById(req.params._id);
+        const data = await About.findById(req.params._id);
 
         if (!data)
             return res.status(404).json({
@@ -177,7 +177,7 @@ async function updateRecord(req, res) {
 async function deleteRecord(req, res) {
     try {
 
-        const data = await AboutPage.findById(req.params._id);
+        const data = await About.findById(req.params._id);
 
         if (!data)
             return res.status(404).json({

@@ -65,7 +65,7 @@ const TimelineEventSchema = new Schema(
 );
 
 /* ── Main Page Schema ────────────────────────────────────────── */
-const AboutPageSchema = new Schema(
+const AboutSchema = new Schema(
     {
         companyInfo: { type: CompanyInfoSchema, required: true },
         storyline: { type: StorylineSchema, required: true },
@@ -81,8 +81,8 @@ const AboutPageSchema = new Schema(
 );
 
 /* Helper to fetch the single active published page */
-AboutPageSchema.statics.getSingleton = function () {
+AboutSchema.statics.getSingleton = function () {
     return this.findOne({ isPublished: true }).sort({ createdAt: -1 });
 };
 
-module.exports = mongoose.model('AboutPage', AboutPageSchema);
+module.exports = mongoose.model('About', AboutSchema);

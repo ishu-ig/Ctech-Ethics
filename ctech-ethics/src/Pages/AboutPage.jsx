@@ -298,7 +298,7 @@ export default function AboutPage({
                   className="about-glass-card p-4 text-center h-100"
                 >
                   <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(110,168,255,0.12)', border: '1px solid rgba(110,168,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                    <i className={`fa ${v.icon}`} style={{ color: '#6ea8ff', fontSize: '1.1rem' }} />
+                    <i className={v.icon?.startsWith('fa') ? v.icon : `fa ${v.icon}`} style={{ color: '#6ea8ff', fontSize: '1.1rem' }} />
                   </div>
                   <h3 className="value-card-title">{v.title}</h3>
                   <p className="value-card-desc">{v.desc}</p>

@@ -200,7 +200,7 @@ export default function HomePage() {
                     >
                       Book Consultancy
                     </motion.button>
-                    <motion.a
+                    {/* <motion.a
                       href="https://www.youtube.com/watch?v=Y7f98aduVJ8"
                       className="glightbox btn-watch-video d-flex align-items-center gap-2"
                       whileHover={{ scale: 1.05 }}
@@ -220,7 +220,7 @@ export default function HomePage() {
                         style={{ fontSize: 'var(--fluid-xl)', color: slide.accent }}
                       />
                       <span>Watch Video</span>
-                    </motion.a>
+                    </motion.a> */}
                   </motion.div>
 
                   {/* Slide indicators — only shown once there's more than one banner to switch between */}

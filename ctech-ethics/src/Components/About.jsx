@@ -134,7 +134,7 @@ export default function About({
                 {features.map(({ icon, text }) => (
                   <div className="col-sm-6 d-flex align-items-start gap-3" key={text}>
                     <div className="p-2 rounded-3 bg-primary-subtle text-primary">
-                      <i className={`bi ${icon || 'bi-check-circle'} fs-4`}></i>
+                      <i className={`${icon?.startsWith('fa') ? icon : `bi ${icon || 'bi-check-circle'}`} fs-4`}></i>
                     </div>
                     <div>
                       <h6 className="fw-semibold mb-1 about-feature-text">{text}</h6>
