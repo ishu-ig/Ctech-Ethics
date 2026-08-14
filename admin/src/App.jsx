@@ -71,9 +71,7 @@ import AdminApplications from "./pages/application/AdminApplication";
 import AdminShowApplication from "./pages/application/AdminShowApplication";
 import AdminPlacementApplications from "./pages/placementApplication/AdminPlacementApplication";
 import AdminShowPlacementApplication from "./pages/placementApplication/AdminShowPlacementApplication";
-import AdminNote from "./pages/note/AdminNote";
-import AdminCreateNote from "./pages/note/AdminCreateNote";
-import AdminUpdateNote from "./pages/note/AdminUpdateNote";
+
 
 // FIX: All public routes listed here must match route paths exactly
 const publicRoutes = ["/login", "/register", "/forgot-password"];
@@ -255,13 +253,6 @@ function Shell() {
 
           <Route path="/placementApplication" element={<AdminPlacementApplications />} />
           <Route path="/placementApplication/view/:_id" element={<AdminShowPlacementApplication />} />
-
-
-
-          <Route path="/note" element={<AdminNote />} />
-          <Route path="/note/create" element={<AdminCreateNote />} />
-          <Route path="/note/update/:_id" element={<AdminUpdateNote />} />
-          <Route path="/newsletter" element={<AdminNewsletter />} />
 
         </Routes>
         <Footer />

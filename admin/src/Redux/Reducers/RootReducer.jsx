@@ -20,7 +20,6 @@ import SubServiceReducer from "./SubServiceReducer"
 import PlacedStudentReducer from "./PlacedStudentReducer"
 import ApplicationReducer from "./ApplicationReducer"
 import PlacementApplicationReducer from "./PlacementApplicationReducer"
-import NoteReducer from "./NoteReducer"
 
 
 
@@ -48,5 +47,4 @@ export default combineReducers({
     PlacedStudentStateData: PlacedStudentReducer,
     ApplicationStateData: ApplicationReducer,
     PlacementApplicationStateData: PlacementApplicationReducer,
-    NoteStateData: NoteReducer
 })
