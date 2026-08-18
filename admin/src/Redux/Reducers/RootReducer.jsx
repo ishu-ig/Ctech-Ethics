@@ -20,6 +20,7 @@ import SubServiceReducer from "./SubServiceReducer"
 import PlacedStudentReducer from "./PlacedStudentReducer"
 import ApplicationReducer from "./ApplicationReducer"
 import PlacementApplicationReducer from "./PlacementApplicationReducer"
+import ConsultancyReducer from "./ConsultancyReducer"
 
 
 
@@ -42,9 +43,9 @@ export default combineReducers({
     TechStackStateData: TechStackReducer,
     PlacementStateData: PlacementReducer,
     CareerStateData: CareerReducer,
-    PortfolioStateData: PortfolioReducer,
     SubServiceStateData: SubServiceReducer,
     PlacedStudentStateData: PlacedStudentReducer,
     ApplicationStateData: ApplicationReducer,
     PlacementApplicationStateData: PlacementApplicationReducer,
+    ConsultancyStateData: ConsultancyReducer,
 })

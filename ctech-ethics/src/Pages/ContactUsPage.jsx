@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin, Phone, Mail, Clock, Send, CheckCircle2, ChevronDown,
   Sparkles, MessageSquare, ShieldCheck, Zap, UserCheck, ArrowRight,
-  HelpCircle, Building, RefreshCw, MessageCircle
+  HelpCircle, Building, RefreshCw, MessageCircle, Copy, Check, ExternalLink
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import HeroSection from '../Components/HeroSection';
@@ -22,34 +22,64 @@ const INFO_CARDS = [
   {
     icon: MapPin,
     title: 'Visit Headquarters',
-    lines: ['123 Tech Park, Cyber City', 'Dehradun & Mumbai, India'],
+    primary: 'Civil Lines, Roorkee',
+    secondary: 'Opposite Prem Mandir, Uttarakhand – 247667, India',
     badge: 'Open for Visits',
-    link: 'https://maps.google.com',
-    linkText: 'Get Directions'
+    badgeType: 'success',
+    link: 'https://www.google.com/maps/dir/?api=1&destination=Opposite+Prem+Mandir,+Civil+Lines,+Roorkee,+Uttarakhand+247667,+India',
+    linkText: 'Get Directions',
+    accentColor: '#10b981',
+    accentBg: 'rgba(16, 185, 129, 0.12)',
+    accentBorder: 'rgba(16, 185, 129, 0.28)',
+    glow: 'rgba(16, 185, 129, 0.25)',
+    copyable: false
   },
   {
     icon: Phone,
     title: 'Call Us Directly',
-    lines: ['+91 98765 43210', '+91 80123 45678'],
-    badge: 'Mon - Sat: 9 AM - 7 PM',
-    link: 'tel:+919876543210',
-    linkText: 'Call Now'
+    primary: '+91 7417080572',
+    secondary: 'Mon – Sat: 9:00 AM – 7:00 PM IST',
+    badge: 'Direct Line',
+    badgeType: 'primary',
+    link: 'tel:+917417080572',
+    linkText: 'Call Now',
+    accentColor: '#06b6d4',
+    accentBg: 'rgba(6, 182, 212, 0.12)',
+    accentBorder: 'rgba(6, 182, 212, 0.28)',
+    glow: 'rgba(6, 182, 212, 0.25)',
+    copyable: true,
+    copyValue: '+917417080572'
   },
   {
     icon: Mail,
     title: 'Email Support',
-    lines: ['contact@ctechethic.com', 'support@ctechethic.com'],
-    badge: '24/7 Inbox Monitored',
-    link: 'mailto:contact@ctechethic.com',
-    linkText: 'Send Email'
+    primary: 'ctechethicssolutionhr@gmail.com',
+    secondary: 'Average response under 24 business hours',
+    badge: '24/7 Monitored',
+    badgeType: 'purple',
+    link: 'mailto:ctechethicssolutionhr@gmail.com',
+    linkText: 'Send Email',
+    accentColor: '#8b5cf6',
+    accentBg: 'rgba(139, 92, 246, 0.12)',
+    accentBorder: 'rgba(139, 92, 246, 0.28)',
+    glow: 'rgba(139, 92, 246, 0.25)',
+    copyable: true,
+    copyValue: 'ctechethicssolutionhr@gmail.com'
   },
   {
     icon: Clock,
     title: 'Working Hours',
-    lines: ['Monday – Saturday: 9:00 AM – 7:00 PM', 'Sunday: Closed (Emergency Support Available)'],
-    badge: 'Fast Response',
-    link: null,
-    linkText: null
+    primary: 'Mon – Sat: 9 AM – 7 PM',
+    secondary: 'Sunday: Emergency Support Available',
+    badge: 'Active Support',
+    badgeType: 'amber',
+    link: '#contact-form-section',
+    linkText: 'Schedule Meeting',
+    accentColor: '#f59e0b',
+    accentBg: 'rgba(245, 158, 11, 0.12)',
+    accentBorder: 'rgba(245, 158, 11, 0.28)',
+    glow: 'rgba(245, 158, 11, 0.25)',
+    copyable: false
   },
 ];
 
@@ -114,6 +144,15 @@ export default function ContactUsPage() {
     subject: SERVICES[0], // Matches Schema "subject"
     message: '',
   });
+
+  const [copiedField, setCopiedField] = useState(null);
+
+  const handleCopy = (text, title) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedField(title);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
 
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
@@ -210,36 +249,94 @@ export default function ContactUsPage() {
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
         >
-          {INFO_CARDS.map((card) => (
-            <motion.div
-              key={card.title}
-              variants={itemVariants}
-              whileHover={{ y: -6, transition: { duration: 0.25 } }}
-              className="glass-card info-card"
-            >
-              <div className="info-card-top">
-                <div className="icon-badge">
-                  <card.icon size={22} />
+          {INFO_CARDS.map((card) => {
+            const isCopied = copiedField === card.title;
+            return (
+              <motion.div
+                key={card.title}
+                variants={itemVariants}
+                whileHover={{ y: -8, transition: { duration: 0.25 } }}
+                className="glass-card modern-info-card"
+                style={{
+                  '--card-accent': card.accentColor,
+                  '--card-glow': card.glow,
+                  '--card-bg': card.accentBg,
+                  '--card-border': card.accentBorder,
+                }}
+              >
+                {/* Top Accent Shimmer Bar */}
+                <div className="card-top-accent-bar" style={{ background: card.accentColor }} />
+
+                <div className="info-card-top">
+                  <div
+                    className="icon-badge-modern"
+                    style={{ background: card.accentBg, color: card.accentColor, borderColor: card.accentBorder }}
+                  >
+                    <card.icon size={22} />
+                  </div>
+                  {card.badge && (
+                    <span className={`status-badge-modern badge-${card.badgeType || 'primary'}`}>
+                      <span className="live-dot" />
+                      {card.badge}
+                    </span>
+                  )}
                 </div>
-                {card.badge && <span className="status-badge">{card.badge}</span>}
-              </div>
 
-              <h3>{card.title}</h3>
+                <h3 className="info-card-title">{card.title}</h3>
 
-              <div className="info-lines">
-                {card.lines.map((line) => (
-                  <p key={line}>{line}</p>
-                ))}
-              </div>
+                <div className="info-card-content">
+                  {card.link ? (
+                    <a
+                      href={card.link}
+                      target={card.link.startsWith('http') ? '_blank' : '_self'}
+                      rel="noreferrer"
+                      className="primary-detail-link"
+                    >
+                      {card.primary}
+                    </a>
+                  ) : (
+                    <div className="primary-detail-text">{card.primary}</div>
+                  )}
 
-              {card.link && (
-                <a href={card.link} target={card.link.startsWith('http') ? '_blank' : '_self'} rel="noreferrer" className="card-action-link">
-                  <span>{card.linkText}</span>
-                  <ArrowRight size={14} />
-                </a>
-              )}
-            </motion.div>
-          ))}
+                  {card.secondary && (
+                    <p className="secondary-detail-text">{card.secondary}</p>
+                  )}
+                </div>
+
+                <div className="info-card-footer">
+                  {card.link ? (
+                    <a
+                      href={card.link}
+                      target={card.link.startsWith('http') ? '_blank' : '_self'}
+                      rel="noreferrer"
+                      className="card-main-btn"
+                      style={{ background: card.accentBg, color: card.accentColor, borderColor: card.accentBorder }}
+                    >
+                      <span>{card.linkText}</span>
+                      <ArrowRight size={14} className="action-arrow" />
+                    </a>
+                  ) : (
+                    <div className="card-info-pill">
+                      <span>Available Always</span>
+                    </div>
+                  )}
+
+                  {card.copyable && (
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(card.copyValue, card.title)}
+                      className={`card-copy-btn ${isCopied ? 'copied' : ''}`}
+                      title="Copy to clipboard"
+                      aria-label={`Copy ${card.title}`}
+                    >
+                      {isCopied ? <Check size={14} /> : <Copy size={14} />}
+                      <span>{isCopied ? 'Copied' : 'Copy'}</span>
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.section>
 
         {/* 3. CONTACT FORM + GOOGLE MAP GRID */}
@@ -390,14 +487,14 @@ export default function ContactUsPage() {
                 <Building size={20} className="text-accent" />
                 <div>
                   <h4>CTech Ethic Solution HQ</h4>
-                  <p>Dehradun & Regional Tech Centers</p>
+                  <p>Prem Mandir, Civil Lines, Roorkee, Uttarakhand</p>
                 </div>
               </div>
               <div className="quick-contact-actions">
-                <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="quick-btn whatsapp">
+                <a href="https://wa.me/917417080572" target="_blank" rel="noreferrer" className="quick-btn whatsapp">
                   <MessageCircle size={15} /> WhatsApp Us
                 </a>
-                <a href="tel:+919876543210" className="quick-btn phone">
+                <a href="tel:+917417080572" className="quick-btn phone">
                   <Phone size={15} /> Instant Call
                 </a>
               </div>
@@ -406,10 +503,10 @@ export default function ContactUsPage() {
             {/* Map Frame Card */}
             <div className="glass-panel map-card">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110204.7461918342!2d77.94709424683073!3d30.32556461993214!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390929c356c888af%3A0x4c35b92437107c16!2sDehradun%2C%20Uttarakhand!5e0!3m2!1sen!2sin!4v1691234567890!5m2!1sen!2sin"
+                src="https://maps.google.com/maps?q=Opposite+Prem+Mandir,+Civil+Lines,+Roorkee,+Uttarakhand+247667,+India&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
-                style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) contrast(1.1)' }}
+                style={{ border: 0, minHeight: '380px' }}
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"

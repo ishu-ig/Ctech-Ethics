@@ -568,15 +568,21 @@ const CSS = `
 .cjd-file-remove:hover { background: rgba(248, 113, 113, 0.2); color: #f87171; }
 
 .cjd-submit-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
-  padding: 14px 24px; border-radius: 999px; font-family: 'Sora', 'Inter', sans-serif; font-weight: 700;
-  font-size: 0.95rem; border: none; margin-top: 6px; background: linear-gradient(135deg, var(--accent) 0%, #a78bfa 50%, var(--accent-2) 100%);
-  color: #040810; box-shadow: 0 10px 28px -6px rgba(110, 168, 255, 0.55); cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+  padding: 14px 28px; border-radius: 999px; font-family: inherit; font-weight: 700;
+  font-size: 0.95rem; letter-spacing: 0.3px; border: none; margin-top: 8px;
+  background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+  color: #ffffff !important; box-shadow: 0 8px 25px -4px rgba(6, 182, 212, 0.45), 0 4px 12px rgba(139, 92, 246, 0.3);
+  cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); outline: none;
 }
-.cjd-submit-btn:hover:not(:disabled) { box-shadow: 0 14px 36px -6px rgba(110, 168, 255, 0.7); transform: translateY(-2px); filter: brightness(1.08); }
+.cjd-submit-btn:hover:not(:disabled) {
+  box-shadow: 0 12px 32px -4px rgba(6, 182, 212, 0.65), 0 6px 18px rgba(139, 92, 246, 0.4);
+  transform: translateY(-2px); filter: brightness(1.08); color: #ffffff !important;
+}
+.cjd-submit-btn:hover:not(:disabled) svg { transform: translateX(4px); }
+.cjd-submit-btn svg { transition: transform 0.25s ease; }
 .cjd-submit-btn:active:not(:disabled) { transform: scale(0.98); }
-.cjd-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+.cjd-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
 .cjd-spinner { animation: cjdSpin 1s linear infinite; }
 @keyframes cjdSpin { 100% { transform: rotate(360deg); } }

@@ -1,6 +1,10 @@
 const { deleteFromCloudinary } = require("../cloudinaryMethods"); // Adjust if using local storage
 const mailer = require("../mailer/index");
 const PlacementApplication = require("../models/PlacementApplication");
+const {
+    placementCandidateTemplate,
+    placementStatusUpdateTemplate
+} = require("../mailer/templates");
 
 const JOB_POPULATE_FIELDS = "jobTitle companyName category type experience location salary status"; // fields from Placement schema
 
@@ -29,18 +33,11 @@ async function createRecord(req, res) {
             await mailer.sendMail({
                 from: process.env.MAIL_SENDER,
                 to: data.email,
-                subject: `Placement Drive Application Received - ${data.jobTitle} | ${process.env.SITE_NAME}`,
-                html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; border: 1px solid #e0e0e0; border-radius: 8px;">
-                        <h2 style="color: #198754; margin-top: 0;">Placement Application Submitted!</h2>
-                        <p>Dear <strong>${data.name}</strong>,</p>
-                        <p>Thank you for submitting your placement application for <strong>${data.jobTitle}</strong> at <strong>${process.env.SITE_NAME}</strong>.</p>
-                        <p>Your details and resume have been successfully logged. Our placement coordinator will update you regarding interview schedules and campus drive details shortly.</p>
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-                        <p style="font-size: 13px; color: #777;">If you have any questions, feel free to contact our placement team.</p>
-                        <p style="font-size: 14px; margin-bottom: 0;">Best regards,<br/><strong>${process.env.SITE_NAME} Placement Cell</strong></p>
-                    </div>
-                `
+                subject: `Placement Drive Application Received - ${data.jobTitle} | ${process.env.SITE_NAME || "CTech Ethics"}`,
+                html: placementCandidateTemplate({
+                    name: data.name,
+                    jobTitle: data.jobTitle
+                })
             });
             console.log(`Placement application confirmation email sent to ${data.email}`);
         } catch (mailErr) {
@@ -111,26 +108,18 @@ async function updateRecord(req, res) {
 
         // If the status actually changed, send an email notification
         if (oldStatus !== newStatus) {
-            const subject = `Update on your application for ${data.jobTitle}`;
-            const htmlMessage = `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-                    <h3>Application Status Update</h3>
-                    <p>Dear <strong>${data.name}</strong>,</p>
-                    <p>There is an update regarding your application for the position of <strong>${data.jobTitle}</strong>.</p>
-                    <p>Your current application status is now: <strong style="color: #0056b3;">${newStatus}</strong></p>
-                    <p>If you have any questions, feel free to reach out to us.</p>
-                    <br/>
-                    <p>Best regards,</p>
-                    <p><strong>CTech Ethic Solution Hiring Team</strong></p>
-                </div>
-            `;
+            const subject = `Update on your placement application for ${data.jobTitle}`;
 
             try {
                 await mailer.sendMail({
                     from: process.env.MAIL_SENDER,
                     to: data.email,
                     subject: subject,
-                    html: htmlMessage,
+                    html: placementStatusUpdateTemplate({
+                        name: data.name,
+                        jobTitle: data.jobTitle,
+                        status: newStatus
+                    })
                 });
                 console.log(`Notification email sent to ${data.email} for status: ${newStatus}`);
             } catch (mailError) {

@@ -301,22 +301,33 @@ export default function AdminUpdateBlog() {
             </div>
 
             {/* DYNAMIC SECTIONS BUILDER */}
-            <div className="panel mb-3 bg-light">
-              <h2 className="h5 mb-3"><i className="bi bi-card-text"></i> Content Sections</h2>
-              <p className="text-muted small mb-3">Add subheadings and separate your text into multiple rich-text paragraphs.</p>
+            <div className="panel blog-sections-panel mb-4">
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                  <h2 className="h5 mb-1"><i className="bi bi-card-text text-primary me-2"></i>Content Sections</h2>
+                  <p className="text-muted small mb-0">Add subheadings and separate your text into multiple rich-text paragraphs.</p>
+                </div>
+                <span className="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill">
+                  {sections.length} {sections.length === 1 ? 'Section' : 'Sections'}
+                </span>
+              </div>
 
               {sections.map((sec, sIdx) => (
-                <div key={sIdx} className="card mb-3 border shadow-sm">
-                  <div className="card-header bg-white d-flex justify-content-between align-items-center">
-                    <span className="fw-bold text-primary">Section {sIdx + 1}</span>
+                <div key={sIdx} className="blog-section-card mb-3">
+                  <div className="blog-section-card-header d-flex justify-content-between align-items-center">
+                    <span className="fw-bold text-primary d-flex align-items-center gap-2">
+                      <i className="bi bi-bookmark-check-fill small"></i> Section {sIdx + 1}
+                    </span>
                     {sections.length > 1 && (
-                      <button className="btn btn-sm btn-outline-danger" onClick={() => removeSection(sIdx)}><i className="bi bi-trash"></i> Remove Section</button>
+                      <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => removeSection(sIdx)}>
+                        <i className="bi bi-trash me-1"></i> Remove Section
+                      </button>
                     )}
                   </div>
-                  <div className="card-body">
+                  <div className="blog-section-card-body">
                     <input
                       type="text"
-                      className="form-control mb-3 fw-bold border-primary"
+                      className="form-control blog-section-subheading-input mb-3 fw-bold"
                       placeholder="Subheading (Optional)"
                       value={sec.subheading}
                       onChange={(e) => updateSubheading(sIdx, e.target.value)}
@@ -324,8 +335,7 @@ export default function AdminUpdateBlog() {
 
                     {sec.paragraphs.map((para, pIdx) => (
                       <div key={pIdx} className="d-flex gap-2 mb-3 align-items-start">
-
-                        <div className="rte flex-grow-1">
+                        <div className="quill-editor rte flex-grow-1">
                           <ReactQuill
                             theme="snow"
                             value={para}
@@ -337,15 +347,26 @@ export default function AdminUpdateBlog() {
                         </div>
 
                         {sec.paragraphs.length > 1 && (
-                          <button className="btn btn-sm btn-light border text-danger mt-1" onClick={() => removeParagraph(sIdx, pIdx)} title="Remove Paragraph"><i className="bi bi-x-lg"></i></button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger mt-1 p-2"
+                            onClick={() => removeParagraph(sIdx, pIdx)}
+                            title="Remove Paragraph"
+                          >
+                            <i className="bi bi-x-lg"></i>
+                          </button>
                         )}
                       </div>
                     ))}
-                    <button className="btn btn-sm btn-outline-primary" onClick={() => addParagraph(sIdx)}><i className="bi bi-plus"></i> Add Paragraph Block</button>
+                    <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => addParagraph(sIdx)}>
+                      <i className="bi bi-plus-lg me-1"></i> Add Paragraph Block
+                    </button>
                   </div>
                 </div>
               ))}
-              <button className="btn btn-primary w-100 py-2 fw-bold" onClick={addSection}><i className="bi bi-plus-circle me-1"></i> Add Another Section</button>
+              <button type="button" className="btn btn-primary w-100 py-2 fw-bold mt-2" onClick={addSection}>
+                <i className="bi bi-plus-circle me-2"></i> Add Another Section
+              </button>
             </div>
 
             {/* AUTHOR DETAILS */}

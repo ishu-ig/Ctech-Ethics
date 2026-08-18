@@ -26,10 +26,10 @@ export default function ContactUs() {
       autoForceUpdate: { forceUpdate: () => forceUpdate((n) => n + 1) },
       className: 'field-error',
       messages: {
-        required:    'This field is required.',
-        email:       'Enter a valid email address.',
-        phone:       'Enter a valid phone number.',
-        min:         'Must be at least :min characters.',
+        required: 'This field is required.',
+        email: 'Enter a valid email address.',
+        phone: 'Enter a valid phone number.',
+        min: 'Must be at least :min characters.',
         alpha_space: 'Only letters and spaces are allowed.',
       },
     })
@@ -119,7 +119,7 @@ export default function ContactUs() {
                       </div>
                       <div className="ms-2 ms-md-3 overflow-hidden">
                         <h4 className="m-0">Address</h4>
-                        <p className="text-truncate m-0">Adam Street, NY</p>
+                        <p className="text-truncate m-0">Prem Mandir, Roorkee</p>
                       </div>
                     </motion.div>
                   </div>
@@ -136,7 +136,7 @@ export default function ContactUs() {
                       </div>
                       <div className="ms-2 ms-md-3 overflow-hidden">
                         <h4 className="m-0">Call Us</h4>
-                        <a href="tel:+155895548855" className="info-link text-truncate d-block">+1 5589 55488</a>
+                        <a href="tel:+917417080572" className="info-link text-truncate d-block">+91 7417080572</a>
                       </div>
                     </motion.div>
                   </div>
@@ -153,7 +153,7 @@ export default function ContactUs() {
                       </div>
                       <div className="ms-2 ms-md-3 overflow-hidden">
                         <h4 className="m-0">Email Us</h4>
-                        <a href="mailto:info@ctechethics.com" className="info-link text-truncate d-block">info@ctechethics.com</a>
+                        <a href="mailto:ctechethicssolutionhr@gmail.com" className="info-link text-truncate d-block">ctechethicssolutionhr@gmail.com</a>
                       </div>
                     </motion.div>
                   </div>
@@ -170,7 +170,7 @@ export default function ContactUs() {
                       </div>
                       <div className="ms-2 ms-md-3 overflow-hidden">
                         <h4 className="m-0">Hours</h4>
-                        <p className="text-truncate m-0">Mon - Sat: 9-6</p>
+                        <p className="text-truncate m-0">Mon – Sat: 9 AM – 7 PM</p>
                       </div>
                     </motion.div>
                   </div>
@@ -179,15 +179,16 @@ export default function ContactUs() {
               </div>
 
               {/* Embedded Map Container */}
-              <div className="contact-map-wrapper overflow-hidden mt-3">
+              <div className="contact-map-wrapper position-relative overflow-hidden mt-3" style={{ minHeight: '230px', borderRadius: '18px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus"
+                  src="https://maps.google.com/maps?q=Opposite+Prem+Mandir,+Civil+Lines,+Roorkee,+Uttarakhand+247667,+India&t=&z=15&ie=UTF8&iwloc=&output=embed"
                   frameBorder="0"
                   className="contact-map-iframe"
+                  style={{ width: '100%', height: '230px', border: 0, display: 'block' }}
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Office location map"
+                  title="CTech Ethic Solution Office Location"
                 />
               </div>
 

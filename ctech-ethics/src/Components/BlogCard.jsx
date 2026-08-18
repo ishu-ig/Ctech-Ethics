@@ -3,24 +3,22 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 /**
+ * Helper to compute clean 2-letter uppercase initials from author name
+ */
+function getAuthorInitials(name) {
+    if (!name || typeof name !== 'string') return 'CT';
+    const clean = name.trim();
+    if (!clean) return 'CT';
+    const words = clean.split(/\s+/).filter(Boolean);
+    if (words.length === 1) {
+        return words[0].slice(0, 2).toUpperCase();
+    }
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
+
+/**
  * BlogCard
  * Single source of truth for how a blog post is rendered as a card.
- * Used by:
- *  - BlogCarousel.jsx  (homepage "Recent Blog Posts" swiper)
- *  - BlogPage.jsx       (full blog grid, "Read More" / Load More)
- *  - BlogDetailsPage.jsx (Related Articles section)
- *
- * Expects a `post` shaped like:
- * {
- *   id | _id, slug, image, date, readTime, title, summary,
- *   author, authorRole, category, categoryColor
- * }
- *
- * Responsive behavior:
- *  - Below 576px (phones): only image, category badge, title, and the
- *    "Read Article" link are shown. Summary, date, read-time badge, and
- *    author info are hidden to keep 2-up mobile cards compact.
- *  - 576px and up: full card content is shown.
  */
 export default function BlogCard({ post, index = 0, inView = true }) {
     if (!post) return null;
@@ -47,13 +45,14 @@ export default function BlogCard({ post, index = 0, inView = true }) {
     const authorName = typeof author === 'object' && author?.name ? author.name : (typeof author === 'string' ? author : 'CTech Team');
     const authorRoleStr = typeof author === 'object' && author?.role ? author.role : (authorRole || '');
     const authorAvatar = typeof author === 'object' && author?.avatar ? author.avatar : null;
+    const authorInitials = getAuthorInitials(authorName);
 
     // Format date string
     const formattedDate = date || (createdAt ? new Date(createdAt).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "Aug 2026");
 
     return (
         <motion.div
-            className="post-item position-relative h-100"
+            className="post-item position-relative h-100 w-100 mx-auto"
             initial={{ opacity: 0, y: 44, scale: 0.96 }}
             animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
             transition={{ duration: 0.58, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
@@ -104,10 +103,10 @@ export default function BlogCard({ post, index = 0, inView = true }) {
                 <div className="post-author-bar d-flex align-items-center justify-content-between mt-auto pt-3">
                     <div className="author-info d-none d-sm-flex align-items-center gap-2">
                         {authorAvatar ? (
-                            <img src={authorAvatar} alt={authorName} className="author-avatar rounded-circle" style={{ width: 26, height: 26, objectFit: 'cover' }} />
+                            <img src={authorAvatar} alt={authorName} className="author-avatar rounded-circle" style={{ width: 32, height: 32, objectFit: 'cover' }} />
                         ) : (
-                            <div className="author-avatar">
-                                <i className="bi bi-person-fill"></i>
+                            <div className="author-avatar author-initials-badge" title={authorName}>
+                                <span>{authorInitials}</span>
                             </div>
                         )}
                         <div>

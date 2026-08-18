@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const cloudinary = require("../cloudinary");
 const mailer = require("../mailer/index");
+const { userWelcomeTemplate, userOtpTemplate } = require("../mailer/templates");
 const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
@@ -18,18 +19,22 @@ schema
     .is().not().oneOf(['Passw0rd', 'Password123']);
 
 // Helper: extract Cloudinary public_id from URL
-function getPublicId(url) {
-    if (!url) return null;
-    const parts = url.split("/");
-    const uploadIndex = parts.indexOf("upload");
-    if (uploadIndex === -1) return null;
-    const pathParts = parts.slice(uploadIndex + 2);
-    return pathParts.join("/").replace(/\.[^/.]+$/, "");
-}
+const getCloudinaryPublicId = (url) => {
+    if (!url || !url.includes("cloudinary.com")) return null;
+    try {
+        const parts = url.split("/");
+        const uploadIndex = parts.indexOf("upload");
+        if (uploadIndex === -1) return null;
+        const publicIdWithExt = parts.slice(uploadIndex + 2).join("/");
+        return publicIdWithExt.replace(/\.[^/.]+$/, "");
+    } catch {
+        return null;
+    }
+};
 
 // Helper: delete from Cloudinary
 async function deleteFromCloudinary(url) {
-    const publicId = getPublicId(url);
+    const publicId = getCloudinaryPublicId(url);
     if (!publicId) return;
     try {
         await cloudinary.uploader.destroy(publicId);
@@ -38,90 +43,80 @@ async function deleteFromCloudinary(url) {
     }
 }
 
-// FIXED: Removed the nested function
 async function createRecord(req, res) {
-    if (schema.validate(req.body.password)) {
-        bcrypt.hash(req.body.password, 12, async (error, hash) => {
-            if (error) {
-                return res.status(500).send({
-                    result: "Fail",
-                    reason: "Internal Server Error"
-                });
-            }
+    try {
+        let errorMessage = {};
+        if (!req.body.name) errorMessage.name = "Full Name is Mandatory";
+        if (!req.body.username) errorMessage.username = "User Name is Mandatory";
+        if (!req.body.email) errorMessage.email = "Email Address is Mandatory";
+        if (!req.body.phone) errorMessage.phone = "Phone Number is Mandatory";
+        if (!req.body.password) errorMessage.password = "Password is Mandatory";
 
-            try {
-                let data = new User(req.body);
-                data.password = hash;
+        if (Object.values(errorMessage).length > 0) {
+            return res.status(400).send({ result: "Fail", reason: errorMessage });
+        }
 
-                if (req.files?.pic) {
-                    data.pic = req.files.pic[0].path;
-                }
+        if (!schema.validate(req.body.password)) {
+            errorMessage.password = "Password Must Contain Minimum 8 Character, 1 Upper Case, 1 Lower Case, 1 Digit, No Space Allowed";
+            return res.status(400).send({ result: "Fail", reason: errorMessage });
+        }
 
-                if (req.files?.resume) {
-                    data.resume = req.files.resume[0].path;
-                }
+        let data = new User(req.body);
+        data.password = await bcrypt.hash(req.body.password, 12);
 
-                await data.save();
+        if (req.files?.pic) {
+            data.pic = req.files.pic[0].path;
+        }
+        if (req.files?.resume) {
+            data.resume = req.files.resume[0].path;
+        }
 
-                try {
-                    mailer.sendMail({
-                        from: process.env.MAIL_SENDER,
-                        to: data.email,
-                        subject: `Welcome to ${process.env.SITE_NAME}!`,
-                        html: `
-                            <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #fcfcfc;">
-                                <h2 style="color: #0d6efd; text-align: center;">Welcome, ${data.name}!</h2>
-                                <p>Thank you for registering an account with <strong>${process.env.SITE_NAME}</strong>.</p>
-                                <p>Your registered username is: <strong>${data.username}</strong></p>
-                                <p>You can now log in to manage your profile and view applications.</p>
-                                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-                                <p style="font-size: 13px; color: #777; text-align: center;">Best regards,<br/><strong>Team ${process.env.SITE_NAME}</strong></p>
-                            </div>
-                        `
-                    }, (err) => {
-                        if (err) console.log("User welcome email send error:", err);
-                    });
-                } catch (e) {
-                    console.error("User welcome email failed:", e);
-                }
+        await data.save();
 
-                res.send({
-                    result: "Done",
-                    data
-                });
+        try {
+            await mailer.sendMail({
+                from: process.env.MAIL_SENDER,
+                to: data.email,
+                subject: `Welcome to ${process.env.SITE_NAME || "CTech Ethics"}!`,
+                html: userWelcomeTemplate({
+                    name: data.name,
+                    username: data.username
+                })
+            });
+            console.log(`Welcome email sent to ${data.email}`);
+        } catch (e) {
+            console.error("User welcome email failed:", e);
+        }
 
-            } catch (error) {
-                if (req.files?.pic) {
-                    await deleteFromCloudinary(req.files.pic[0].path);
-                }
-
-                if (req.files?.resume) {
-                    await deleteFromCloudinary(req.files.resume[0].path);
-                }
-
-                let errorMessage = {};
-
-                if (error.code === 11000) { // MongoDB duplicate key error code
-                    if (error.keyValue?.username) errorMessage.username = "User Name Already Exist";
-                    if (error.keyValue?.email) errorMessage.email = "Email Already Exist";
-                }
-
-                if (error.errors?.name) errorMessage.name = error.errors.name.message;
-                if (error.errors?.username) errorMessage.username = error.errors.username.message;
-                if (error.errors?.email) errorMessage.email = error.errors.email.message;
-                if (error.errors?.phone) errorMessage.phone = error.errors.phone.message;
-                if (error.errors?.password) errorMessage.password = error.errors.password.message;
-
-                res.status(400).send({
-                    result: "Fail",
-                    reason: Object.keys(errorMessage).length ? errorMessage : "Validation Error"
-                });
-            }
+        res.send({
+            result: "Done",
+            data
         });
-    } else {
+    } catch (error) {
+        if (req.files?.pic) {
+            await deleteFromCloudinary(req.files.pic[0].path);
+        }
+
+        if (req.files?.resume) {
+            await deleteFromCloudinary(req.files.resume[0].path);
+        }
+
+        let errorMessage = {};
+
+        if (error.code === 11000) { // MongoDB duplicate key error code
+            if (error.keyValue?.username) errorMessage.username = "User Name Already Exist";
+            if (error.keyValue?.email) errorMessage.email = "Email Already Exist";
+        }
+
+        if (error.errors?.name) errorMessage.name = error.errors.name.message;
+        if (error.errors?.username) errorMessage.username = error.errors.username.message;
+        if (error.errors?.email) errorMessage.email = error.errors.email.message;
+        if (error.errors?.phone) errorMessage.phone = error.errors.phone.message;
+        if (error.errors?.password) errorMessage.password = error.errors.password.message;
+
         res.status(400).send({
             result: "Fail",
-            reason: "Invalid Password"
+            reason: Object.keys(errorMessage).length ? errorMessage : "Validation Error"
         });
     }
 }
@@ -258,28 +253,20 @@ async function forgetPassword1(req, res) {
             data.otp = otp
             await data.save()
 
-            mailer.sendMail({
-                from: process.env.MAIL_SENDER,
-                to: data.email,
-                subject: `OTP for Password Reset : Team ${process.env.SITE_NAME}`,
-                html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
-                        <h2 style="text-align: center; color: #333;">Password Reset Request</h2>
-                        <p>Hello <strong>${data.name}</strong>,</p>
-                        <p>You have requested a password reset.</p>
-                        <div style="text-align: center; font-size: 18px; font-weight: bold; padding: 10px; background-color: #f3f3f3; border-radius: 5px;">
-                            Your OTP: <span style="color: #d32f2f; font-size: 22px;">${data.otp}</span>
-                        </div>
-                        <p style="color: #d32f2f; text-align: center; font-size: 14px;">Please do not share this OTP with anyone.</p>
-                        <p>This OTP is valid for a limited time.</p>
-                        <p>Regards,</p>
-                        <p><strong>Team ${process.env.SITE_NAME}</strong></p>
-                    </div>
-                `
-            }, (error) => {
-                if (error)
-                    console.log(error)
-            })
+            try {
+                await mailer.sendMail({
+                    from: process.env.MAIL_SENDER,
+                    to: data.email,
+                    subject: `OTP for Password Reset - ${process.env.SITE_NAME || "CTech Ethics"}`,
+                    html: userOtpTemplate({
+                        name: data.name,
+                        otp: data.otp
+                    })
+                });
+                console.log(`Password reset OTP sent to ${data.email}`);
+            } catch (mailErr) {
+                console.error("Password reset OTP email failed:", mailErr);
+            }
             res.send({
                 result: "Done",
                 message: "OTP Has Been Sent On Your Registered Email Address"

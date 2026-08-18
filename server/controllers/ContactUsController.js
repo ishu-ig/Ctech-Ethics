@@ -1,41 +1,53 @@
-const ContactUs = require("../models/ContactUs")
-const mailer = require("../mailer/index")
+const ContactUs = require("../models/ContactUs");
+const mailer = require("../mailer/index");
+const {
+    contactUserTemplate,
+    contactAdminAlertTemplate,
+    contactResolvedTemplate
+} = require("../mailer/templates");
 
 async function createRecord(req, res) {
     try {
-        let data = new ContactUs(req.body)
-        await data.save()
-        mailer.sendMail({
-            from: process.env.MAIL_SENDER,
-            to: data.email,
-            subject: "Your Query Submission - " + process.env.SITE_NAME,
-            html: `
-                <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9;">
-                    <h2 style="color: #333;">Hello,</h2>
-                    <p style="color: #555;">
-                        Thank you for reaching out to us. Here are the details of your query:
-                    </p>
-                    <table style="border-collapse: collapse; width: 100%;">
-                        <tr>
-                            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Subject:</strong></td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">${data.subject}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Message:</strong></td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">${data.message}</td>
-                        </tr>
-                    </table>
-                    <p style="color: #555;">
-                        We will get back to you as soon as possible. If you need immediate assistance, visit our
-                        <a href="${process.env.SERVER}/contact" style="color: #007bff;">Contact Page</a>.
-                    </p>
-                    <p style="color: #555;">Best Regards, <br> Team ${process.env.SITE_NAME}</p>
-                </div>
-            `,
-        }, (error, info) => {
-            if (error) console.log("ContactUs Email Send Failed:", error);
-            else console.log("ContactUs Email Sent Successfully:", info?.messageId);
-        })
+        let data = new ContactUs(req.body);
+        await data.save();
+
+        // 1. Send confirmation email to user
+        try {
+            await mailer.sendMail({
+                from: process.env.MAIL_SENDER,
+                to: data.email,
+                subject: `Your Query Submission - ${process.env.SITE_NAME || "Ctech Ethics Solutions"}`,
+                html: contactUserTemplate({
+                    name: data.name,
+                    subject: data.subject,
+                    message: data.message
+                })
+            });
+            console.log(`ContactUs user confirmation sent to ${data.email}`);
+        } catch (mailErr) {
+            console.error("ContactUs user confirmation email failed:", mailErr);
+        }
+
+        // 2. Send notification to site admin
+        try {
+            if (process.env.MAIL_SENDER && process.env.MAIL_SENDER !== data.email) {
+                await mailer.sendMail({
+                    from: process.env.MAIL_SENDER,
+                    to: process.env.MAIL_SENDER,
+                    subject: `[New Inquiry] ${data.name}: ${data.subject}`,
+                    html: contactAdminAlertTemplate({
+                        name: data.name,
+                        email: data.email,
+                        phone: data.phone,
+                        subject: data.subject,
+                        message: data.message
+                    })
+                });
+                console.log("ContactUs admin notification sent");
+            }
+        } catch (adminMailErr) {
+            console.error("ContactUs admin notification failed:", adminMailErr);
+        }
 
         res.send({
             result: "Done",
@@ -112,26 +124,20 @@ async function updateRecord(req, res) {
             data.active = req.body.active ?? data.active
             await data.save()
             if (data.active === false) {
-                mailer.sendMail({
-                    from: process.env.MAIL_SENDER,
-                    to: data.email,
-                    subject: `Query Resolved - Team ${process.env.SITE_NAME}`,
-                    html: `
-                                    <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9;">
-                                        <h2 style="color: #28a745;">Hello,</h2>
-                                        <p style="color: #555;">
-                                            We are happy to inform you that your query has been resolved. If you need any further assistance, feel free to contact us again.
-                                        </p>
-                                        <p style="color: #555;">
-                                            <a href="${process.env.SERVER}/contact" style="color: #007bff;">Click here</a> to submit a new query if required.
-                                        </p>
-                                        <p style="color: #555;">Best Regards, <br> Team ${process.env.SITE_NAME}</p>
-                                    </div>
-                                `,
-                }, (error) => {
-                    if (error) console.log(error);
-                });
-
+                try {
+                    await mailer.sendMail({
+                        from: process.env.MAIL_SENDER,
+                        to: data.email,
+                        subject: `Query Resolved - ${process.env.SITE_NAME || "Ctech Ethics Solutions"}`,
+                        html: contactResolvedTemplate({
+                            name: data.name,
+                            subject: data.subject
+                        })
+                    });
+                    console.log(`Query resolved notification sent to ${data.email}`);
+                } catch (mailError) {
+                    console.error("Query resolved email send error:", mailError);
+                }
             }
 
             res.send({

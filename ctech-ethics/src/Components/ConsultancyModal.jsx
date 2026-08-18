@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
 import { getService } from '../Redux/ActionCreators/ServiceActionCreators';
+import { createConsultancy } from '../Redux/ActionCreators/ConsultancyActionCreators';
 import SimpleReactValidator from 'simple-react-validator';
 import { useEffect } from 'react';
 
@@ -48,10 +49,11 @@ export default function ConsultancyModal({ isOpen, onClose, defaultService: preS
       autoForceUpdate: { forceUpdate: () => forceUpdate((n) => n + 1) },
       className: 'field-error',
       messages: {
-        required:    'This field is required.',
-        email:       'Enter a valid email address.',
-        phone:       'Enter a valid phone number.',
-        min:         'Must be at least :min characters.',
+        required: 'This field is required.',
+        email: 'Please enter a valid email address.',
+        phone: 'Please enter a valid phone number.',
+        min: 'Must be at least :min characters long.',
+        max: 'Must not exceed :max characters.',
         alpha_space: 'Only letters and spaces are allowed.',
       },
     })
@@ -74,6 +76,7 @@ export default function ConsultancyModal({ isOpen, onClose, defaultService: preS
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    validator.current.showMessageFor(name);
   };
 
   const handleSubmit = (e) => {
@@ -84,10 +87,11 @@ export default function ConsultancyModal({ isOpen, onClose, defaultService: preS
       return;
     }
     setIsSubmitting(true);
+    dispatch(createConsultancy(formData));
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 1000);
+    }, 600);
   };
 
   const handleReset = () => {
@@ -193,33 +197,43 @@ export default function ConsultancyModal({ isOpen, onClose, defaultService: preS
                     {/* Full Name */}
                     <div className="col-md-6">
                       <div className="floating-group">
-                        <i className="bi bi-person field-icon"></i>
-                        <input
-                          type="text"
-                          name="name"
-                          className="consultancy-input"
-                          placeholder="Full Name *"
-                          value={formData.name}
-                          onChange={handleChange}
-                          onBlur={() => validator.current.showMessageFor('name')}
-                        />
-                        {validator.current.message('name', formData.name, 'required|alpha_space|min:2')}
+                        <label className="form-label-custom mb-1 text-white-50" style={{ fontSize: '13px', fontWeight: 600 }}>
+                          Full Name <span style={{ color: '#f87171' }}>*</span>
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                          <i className="bi bi-person field-icon"></i>
+                          <input
+                            type="text"
+                            name="name"
+                            className="consultancy-input"
+                            placeholder="e.g. John Doe"
+                            value={formData.name}
+                            onChange={handleChange}
+                            onBlur={() => validator.current.showMessageFor('name')}
+                          />
+                        </div>
+                        {validator.current.message('name', formData.name, 'required|min:2|max:50')}
                       </div>
                     </div>
 
                     {/* Email Address */}
                     <div className="col-md-6">
                       <div className="floating-group">
-                        <i className="bi bi-envelope field-icon"></i>
-                        <input
-                          type="email"
-                          name="email"
-                          className="consultancy-input"
-                          placeholder="Email Address *"
-                          value={formData.email}
-                          onChange={handleChange}
-                          onBlur={() => validator.current.showMessageFor('email')}
-                        />
+                        <label className="form-label-custom mb-1 text-white-50" style={{ fontSize: '13px', fontWeight: 600 }}>
+                          Email Address <span style={{ color: '#f87171' }}>*</span>
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                          <i className="bi bi-envelope field-icon"></i>
+                          <input
+                            type="email"
+                            name="email"
+                            className="consultancy-input"
+                            placeholder="e.g. john@example.com"
+                            value={formData.email}
+                            onChange={handleChange}
+                            onBlur={() => validator.current.showMessageFor('email')}
+                          />
+                        </div>
                         {validator.current.message('email', formData.email, 'required|email')}
                       </div>
                     </div>
@@ -227,16 +241,21 @@ export default function ConsultancyModal({ isOpen, onClose, defaultService: preS
                     {/* Phone Number */}
                     <div className="col-md-6">
                       <div className="floating-group">
-                        <i className="bi bi-telephone field-icon"></i>
-                        <input
-                          type="tel"
-                          name="phone"
-                          className="consultancy-input"
-                          placeholder="Phone Number *"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          onBlur={() => validator.current.showMessageFor('phone')}
-                        />
+                        <label className="form-label-custom mb-1 text-white-50" style={{ fontSize: '13px', fontWeight: 600 }}>
+                          Phone Number <span style={{ color: '#f87171' }}>*</span>
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                          <i className="bi bi-telephone field-icon"></i>
+                          <input
+                            type="tel"
+                            name="phone"
+                            className="consultancy-input"
+                            placeholder="e.g. +1 555 123 4567"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            onBlur={() => validator.current.showMessageFor('phone')}
+                          />
+                        </div>
                         {validator.current.message('phone', formData.phone, 'required|phone')}
                       </div>
                     </div>
@@ -244,19 +263,24 @@ export default function ConsultancyModal({ isOpen, onClose, defaultService: preS
                     {/* Service Required (Dropdown) */}
                     <div className="col-md-6">
                       <div className="floating-group">
-                        <i className="bi bi-gear field-icon"></i>
-                        <select
-                          name="service"
-                          className="consultancy-select"
-                          value={formData.service}
-                          onChange={handleChange}
-                          onBlur={() => validator.current.showMessageFor('service')}
-                        >
-                          <option value="" disabled>Select Service Required *</option>
-                          {serviceOptions.map((s, idx) => (
-                            <option key={idx} value={s}>{s}</option>
-                          ))}
-                        </select>
+                        <label className="form-label-custom mb-1 text-white-50" style={{ fontSize: '13px', fontWeight: 600 }}>
+                          Service Required <span style={{ color: '#f87171' }}>*</span>
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                          <i className="bi bi-gear field-icon"></i>
+                          <select
+                            name="service"
+                            className="consultancy-select"
+                            value={formData.service}
+                            onChange={handleChange}
+                            onBlur={() => validator.current.showMessageFor('service')}
+                          >
+                            <option value="" disabled>Select Service Required</option>
+                            {serviceOptions.map((s, idx) => (
+                              <option key={idx} value={s}>{s}</option>
+                            ))}
+                          </select>
+                        </div>
                         {validator.current.message('service', formData.service, 'required')}
                       </div>
                     </div>
@@ -264,19 +288,24 @@ export default function ConsultancyModal({ isOpen, onClose, defaultService: preS
                     {/* Project Budget (Dropdown) */}
                     <div className="col-12">
                       <div className="floating-group">
-                        <i className="bi bi-cash-stack field-icon"></i>
-                        <select
-                          name="budget"
-                          className="consultancy-select"
-                          value={formData.budget}
-                          onChange={handleChange}
-                          onBlur={() => validator.current.showMessageFor('budget')}
-                        >
-                          <option value="" disabled>Select Project Budget *</option>
-                          {BUDGET_RANGES.map((b) => (
-                            <option key={b} value={b}>{b}</option>
-                          ))}
-                        </select>
+                        <label className="form-label-custom mb-1 text-white-50" style={{ fontSize: '13px', fontWeight: 600 }}>
+                          Project Budget <span style={{ color: '#f87171' }}>*</span>
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                          <i className="bi bi-cash-stack field-icon"></i>
+                          <select
+                            name="budget"
+                            className="consultancy-select"
+                            value={formData.budget}
+                            onChange={handleChange}
+                            onBlur={() => validator.current.showMessageFor('budget')}
+                          >
+                            <option value="" disabled>Select Estimated Budget</option>
+                            {BUDGET_RANGES.map((b) => (
+                              <option key={b} value={b}>{b}</option>
+                            ))}
+                          </select>
+                        </div>
                         {validator.current.message('budget', formData.budget, 'required')}
                       </div>
                     </div>
@@ -284,16 +313,21 @@ export default function ConsultancyModal({ isOpen, onClose, defaultService: preS
                     {/* Brief Project Description (Textarea) */}
                     <div className="col-12">
                       <div className="floating-group">
-                        <i className="bi bi-chat-left-text field-icon mt-2"></i>
-                        <textarea
-                          name="description"
-                          rows="3"
-                          className="consultancy-input textarea-input"
-                          placeholder="Brief Project Description *"
-                          value={formData.description}
-                          onChange={handleChange}
-                          onBlur={() => validator.current.showMessageFor('description')}
-                        />
+                        <label className="form-label-custom mb-1 text-white-50" style={{ fontSize: '13px', fontWeight: 600 }}>
+                          Project Scope & Details <span style={{ color: '#f87171' }}>*</span>
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                          <i className="bi bi-chat-left-text field-icon mt-2"></i>
+                          <textarea
+                            name="description"
+                            rows="3"
+                            className="consultancy-input textarea-input"
+                            placeholder="Briefly describe your project requirements and goals (min. 10 characters)..."
+                            value={formData.description}
+                            onChange={handleChange}
+                            onBlur={() => validator.current.showMessageFor('description')}
+                          />
+                        </div>
                         {validator.current.message('description', formData.description, 'required|min:10')}
                       </div>
                     </div>

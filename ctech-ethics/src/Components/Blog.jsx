@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { motion, useInView } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import BlogCard from './BlogCard';
 import { getBlog } from '../Redux/ActionCreators/BlogActionCreators';
 
@@ -83,24 +84,62 @@ export default function Blog() {
   return (
     <section id="recent-blog-postst" className="recent-blog-postst section" ref={sectionRef}>
 
-      {/* ── Section Header ── */}
-      <div className="container blog-header">
+      {/* ── Section Header (Perfect Centered Alignment) ── */}
+      <div className="container blog-header text-center justify-content-center mb-4 mb-md-5">
         <motion.div
-          className="blog-header-text"
+          className="blog-header-text text-center mx-auto"
           initial={{ opacity: 0, y: 35 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="blog-eyebrow">
+          <span className="blog-eyebrow d-inline-flex justify-content-center align-items-center">
             <i className="bi bi-journal-text me-1"></i> Insights, News & Culture
           </span>
           <h2>
             Recent <span className="blog-gradient-text">Articles</span>
           </h2>
-          <p className="blog-header-desc">Explore expert articles on modern software engineering, company culture, leadership, and career growth.</p>
+          <p className="blog-header-desc mx-auto" style={{ maxWidth: '640px' }}>
+            Explore expert articles on modern software engineering, company culture, leadership, and career growth.
+          </p>
         </motion.div>
+      </div>
 
-        <div className="blog-carousel-nav d-none d-md-flex">
+      {/* ── Blog Carousel ── */}
+      <div className="container">
+        <div className="position-relative">
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            loop={posts.length > 3}
+            speed={650}
+            autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            slidesPerView={1}
+            spaceBetween={20}
+            pagination={{ el: '.blog-posts-carousel-pagination', clickable: true }}
+            navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
+            onBeforeInit={(swiper) => {
+              swiper.params.navigation.prevEl = prevRef.current;
+              swiper.params.navigation.nextEl = nextRef.current;
+            }}
+            breakpoints={{
+              0: { slidesPerView: 1, spaceBetween: 16, centeredSlides: false },
+              600: { slidesPerView: 1.5, spaceBetween: 18, centeredSlides: true },
+              768: { slidesPerView: 2, spaceBetween: 20, centeredSlides: false },
+              992: { slidesPerView: 3, spaceBetween: 24, centeredSlides: false },
+            }}
+            className="blog-posts-carousel w-100"
+          >
+            {posts.map((post, idx) => (
+              <SwiperSlide key={post._id || post.id || idx} className="h-auto d-flex justify-content-center">
+                <div className="w-100 mx-auto" style={{ maxWidth: '100%' }}>
+                  <BlogCard post={post} index={idx} inView={inView} />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+
+        {/* ── Centered Carousel Navigation & Pagination ── */}
+        <div className="d-flex align-items-center justify-content-center gap-3 mt-4 pt-2">
           <motion.button
             ref={prevRef}
             className="blog-nav-btn"
@@ -108,8 +147,13 @@ export default function Blog() {
             whileHover={{ scale: 1.1, y: -2 }}
             whileTap={{ scale: 0.92 }}
           >
-            <i className="bi bi-arrow-left"></i>
+            <ChevronLeft size={20} />
           </motion.button>
+
+          <div className="blog-pagination-pill-track">
+            <div className="swiper-pagination blog-posts-carousel-pagination"></div>
+          </div>
+
           <motion.button
             ref={nextRef}
             className="blog-nav-btn"
@@ -117,44 +161,8 @@ export default function Blog() {
             whileHover={{ scale: 1.1, y: -2 }}
             whileTap={{ scale: 0.92 }}
           >
-            <i className="bi bi-arrow-right"></i>
+            <ChevronRight size={20} />
           </motion.button>
-        </div>
-      </div>
-
-      {/* ── Blog Carousel ── */}
-      <div className="container">
-        <Swiper
-          modules={[Navigation, Pagination, Autoplay]}
-          loop={true}
-          speed={650}
-          autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
-          slidesPerView={1}
-          spaceBetween={28}
-          pagination={{ el: '.blog-posts-carousel-pagination', clickable: true }}
-          navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
-          onBeforeInit={(swiper) => {
-            swiper.params.navigation.prevEl = prevRef.current;
-            swiper.params.navigation.nextEl = nextRef.current;
-          }}
-          breakpoints={{
-            0: { slidesPerView: 1, spaceBetween: 10 },
-            768: { slidesPerView: 2, spaceBetween: 18 },
-            992: { slidesPerView: 3, spaceBetween: 24 },
-          }}
-          className="blog-posts-carousel"
-        >
-          {posts.map((post, idx) => (
-            <SwiperSlide key={post.id}>
-              <BlogCard post={post} index={idx} inView={inView} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-
-        <div className="d-flex justify-content-center w-100 mt-4">
-          <div className="blog-pagination-pill-track">
-            <div className="swiper-pagination blog-posts-carousel-pagination"></div>
-          </div>
         </div>
       </div>
 

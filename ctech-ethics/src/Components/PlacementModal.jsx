@@ -310,7 +310,7 @@ export default function PlacementModal({ isOpen, onClose }) {
                     <div className="col-12 mt-4 d-flex align-items-center justify-content-end gap-3">
                       <motion.button
                         type="button"
-                        className="btn-consultancy-cancel"
+                        className="btn-placement-cancel"
                         onClick={onClose}
                         whileHover={{ scale: 1.04 }}
                         whileTap={{ scale: 0.96 }}
@@ -320,11 +320,10 @@ export default function PlacementModal({ isOpen, onClose }) {
 
                       <motion.button
                         type="submit"
-                        className="btn-placement-cta d-flex align-items-center justify-content-center gap-2"
+                        className="btn-placement-submit"
                         disabled={isSubmitting}
-                        whileHover={{ scale: 1.04, boxShadow: '0 8px 30px rgba(34, 211, 238, 0.4)' }}
+                        whileHover={{ scale: 1.04 }}
                         whileTap={{ scale: 0.96 }}
-                        style={{ border: 'none', cursor: 'pointer' }}
                       >
                         {isSubmitting ? (
                           <>
@@ -334,7 +333,7 @@ export default function PlacementModal({ isOpen, onClose }) {
                         ) : (
                           <>
                             <span>Submit Application</span>
-                            <i className="bi bi-send-fill"></i>
+                            <i className="bi bi-send-fill ms-1"></i>
                           </>
                         )}
                       </motion.button>

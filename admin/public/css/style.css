@@ -2700,6 +2700,67 @@ html[data-theme="dark"] .quill-editor .ql-toolbar button.ql-active .ql-fill {
   fill: var(--admin-primary);
 }
 
+/* ── Blog Content Sections Builder (Light & Dark Mode) ── */
+.blog-sections-panel {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  padding: 1.5rem;
+}
+
+.blog-section-card {
+  background: var(--admin-surface-soft);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blog-section-card:hover {
+  border-color: var(--admin-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.blog-section-card-header {
+  background: var(--admin-surface);
+  border-bottom: 1px solid var(--admin-border);
+  padding: 0.85rem 1.25rem;
+}
+
+.blog-section-card-body {
+  padding: 1.25rem;
+}
+
+.blog-section-subheading-input {
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  border: 1.5px solid var(--admin-border) !important;
+  border-radius: 8px !important;
+}
+
+.blog-section-subheading-input:focus {
+  border-color: var(--admin-primary) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+.rte .ql-container {
+  min-height: 130px;
+}
+
+.rte .ql-editor {
+  min-height: 130px;
+}
+
+html[data-theme="dark"] .blog-section-card {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-color: var(--admin-border) !important;
+}
+
+html[data-theme="dark"] .blog-section-card-header {
+  background: var(--admin-surface) !important;
+  border-color: var(--admin-border) !important;
+}
+
 /* ════════════════════════════════════════════════════════════════
    SHARED — Create / Update / List Page Enhancements
    ════════════════════════════════════════════════════════════════ */

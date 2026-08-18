@@ -71,6 +71,8 @@ import AdminApplications from "./pages/application/AdminApplication";
 import AdminShowApplication from "./pages/application/AdminShowApplication";
 import AdminPlacementApplications from "./pages/placementApplication/AdminPlacementApplication";
 import AdminShowPlacementApplication from "./pages/placementApplication/AdminShowPlacementApplication";
+import AdminConsultancy from "./pages/consultancy/AdminConsultancy";
+import AdminShowConsultancy from "./pages/consultancy/AdminShowConsultancy";
 
 
 // FIX: All public routes listed here must match route paths exactly
@@ -253,6 +255,12 @@ function Shell() {
 
           <Route path="/placementApplication" element={<AdminPlacementApplications />} />
           <Route path="/placementApplication/view/:_id" element={<AdminShowPlacementApplication />} />
+
+          <Route path="/newsletter" element={<AdminNewsletter />} />
+
+          {/* CONSULTANCY */}
+          <Route path="/consultancy" element={<AdminConsultancy />} />
+          <Route path="/consultancy/view/:_id" element={<AdminShowConsultancy />} />
 
         </Routes>
         <Footer />

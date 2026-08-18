@@ -63,6 +63,55 @@ async function createRecord(req, res) {
 
         await data.save();
 
+        // Broadcast notification to all newsletter subscribers asynchronously in the background
+        (async () => {
+            try {
+                const Newsletter = require("../models/Newsletter");
+                const mailer = require("../mailer/index");
+                const { newBlogNewsletterTemplate } = require("../mailer/templates");
+
+                const subscribers = await Newsletter.find({ active: { $ne: false } });
+                if (subscribers && subscribers.length > 0) {
+                    const subscriberEmails = [
+                        ...new Set(
+                            subscribers
+                                .map((s) => s.email?.trim().toLowerCase())
+                                .filter((email) => email && email.includes("@"))
+                        )
+                    ];
+
+                    if (subscriberEmails.length > 0) {
+                        const emailHtml = newBlogNewsletterTemplate({
+                            title: data.title,
+                            category: data.category,
+                            categoryColor: data.categoryColor,
+                            summary: data.summary,
+                            image: data.image,
+                            slug: data.slug,
+                            readTime: data.readTime,
+                            authorName: data.author?.name
+                        });
+
+                        for (const recipient of subscriberEmails) {
+                            try {
+                                await mailer.sendMail({
+                                    from: process.env.MAIL_SENDER,
+                                    to: recipient,
+                                    subject: `New Article: ${data.title} - ${process.env.SITE_NAME || "CTech Ethics"}`,
+                                    html: emailHtml
+                                });
+                            } catch (singleErr) {
+                                console.error(`Failed to send blog newsletter to ${recipient}:`, singleErr.message || singleErr);
+                            }
+                        }
+                        console.log(`✅ Blog publication broadcasted to ${subscriberEmails.length} newsletter subscribers.`);
+                    }
+                }
+            } catch (broadcastErr) {
+                console.error("Newsletter broadcast error on blog creation:", broadcastErr);
+            }
+        })();
+
         res.status(201).json({ result: "Done", data });
     } catch (error) {
         // Cleanup files if saving to database fails

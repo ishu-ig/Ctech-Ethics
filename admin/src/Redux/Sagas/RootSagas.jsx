@@ -18,6 +18,7 @@ import subServiceSagas from "./SubServiceSagas"
 import placedStudentSagas from "./PlacedStudentSaga"
 import applicationSagas from "./ApplicationSaga"
 import placementApplicationSagas from "./PlacementApplicationSaga"
+import consultancySagas from "./ConsultancySagas"
 
 
 
@@ -37,12 +38,11 @@ export default function* RootSaga() {
         techStackSagas(),
         placementSagas(),
         careerSagas(),
-        portfolioSagas(),
         subServiceSagas(),
         serviceSagas(),
         placedStudentSagas(),
         applicationSagas(),
         placementApplicationSagas(),
-
+        consultancySagas(),
     ])
 }
