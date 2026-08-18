@@ -173,7 +173,7 @@ export default function AboutPage({
         badgeCount={storyline.badgeCount}
         badgeLabel={storyline.badgeLabel}
         features={features}
-        primaryCta={{ label: 'See Our Values', to: '#values' }}
+        // primaryCta={{ label: 'See Our Values', to: '#values' }}
         secondaryCta={{ label: 'Talk to our team', to: '/contactus' }}
       />
 
